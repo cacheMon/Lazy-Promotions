@@ -292,3 +292,4 @@ For example if you want to generate `figure1b` and `figure3c` you can run:
 ```
 python generate_figures.py figure1b figure3c
 ```
+The figures would be generated as pdf inside `scripts/figures`
