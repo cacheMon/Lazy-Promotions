@@ -16,6 +16,6 @@ markers = {
     "Delay": "P",
     "Random": "D",
     "LRU": "o",
-    "D-FR": "<",
-    "AGE": ">",
+    "D-FR": "*",
+    "AGE": "H",
 }

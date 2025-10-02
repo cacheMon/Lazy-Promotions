@@ -223,7 +223,7 @@ def plt_scatter(
     y,
     x_label=None,
     y_label=None,
-    fontsize=38,
+    fontsize=48,
     legend_font_size=36,
     show_legend=True,
     hue=None,
@@ -236,6 +236,7 @@ def plt_scatter(
     x_size=11,
     y_size=6 * 3.8 / 3,
     output_pdf=None,
+    axis_font_size=42,
     **kwargs,
 ) -> str:
     plt.figure(figsize=(x_size, y_size))
@@ -250,6 +251,7 @@ def plt_scatter(
         palette=palette,
         s=marker_size,
         edgecolor="black",
+        **kwargs,
     )
 
     ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=5))
@@ -269,6 +271,10 @@ def plt_scatter(
             ncol=3,
             frameon=False,
             fontsize=legend_font_size,
+            # mode="expand",  # <-- stretch legend to full width
+            borderaxespad=0.2,  # reduce padding between axes and legend
+            handletextpad=0.2,
+            columnspacing=1.0,
         )
         # legend = ax.legend(fontsize=legend_font_size)
         # # legend.get_frame().set_edgecolor("black")
@@ -286,10 +292,10 @@ def plt_scatter(
     plt.ylabel(y, fontsize=fontsize) if y_label is None else plt.ylabel(
         y_label, fontsize=fontsize
     )
-    plt.yticks(fontsize=fontsize)
+    plt.yticks(fontsize=axis_font_size)
 
     labels = [t.get_text() for t in ax.get_xticklabels()]
-    plt.xticks(fontsize=fontsize)
+    plt.xticks(fontsize=axis_font_size)
 
     buf = io.BytesIO()
     plt.savefig(buf, format="svg", bbox_inches="tight")
