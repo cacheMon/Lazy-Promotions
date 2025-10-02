@@ -283,7 +283,7 @@ To parse the results you need to run `parse_data.py` it took exactly
 one argument `result_directory` and output `scripts/data/data.feather,data.csv`.
 Next, run `process_data` to get the metrics for our figures. It outputs `scripts/data/processed.feather,processed.csv`
 
-Note: The only necessary data is feather format, csv for quick and easy observation of the raw data.
+Note: only feather file is necessary, csv file only for quick and easy observation of the raw data.
 
 #### Generate Figures
 We provide `generate_figures.py` to generate all of the figures on our paper.
