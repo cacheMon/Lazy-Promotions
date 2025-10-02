@@ -518,7 +518,7 @@ if __name__ == "__main__":
     import os
 
     if len(sys.argv) < 2:
-        raise ValueError("Missing required argument: processed data")
+        raise ValueError("Missing required argument: figures to generate")
 
     os.makedirs("figures", exist_ok=True)
     df = pd.read_feather("./data/processed.feather")
