@@ -32,7 +32,6 @@ while IFS= read -r path; do
     min_dram=$(( gb/4+1 ))
     priority=$(( 100/gb + 1 ))
 
-    echo "shell:$priority:$min_dram:1:cd $output_dir/age && $simulator/cachesim $file oracleGeneral age -e scaler=1 0.01 --ignore-obj-size 1" >> $task_out
     for p in 0.01 0.05 0.1 0.2 0.4 0.5 0.6 0.8 0.9; do
         echo "shell:$priority:$min_dram:1:cd $output_dir/prob && $simulator/cachesim $file oracleGeneral lru-prob -e prob=$p 0.01 --ignore-obj-size 1" >> $task_out
     done
