@@ -6,6 +6,7 @@ task_out=~/task
 output_dir=/mnt/nfs/lazy_promotions/results
 distcomp=~/distComp
 simulator=~/Lazy-Promotions/simulator/_build/bin
+datasets_file=~/Lazy-Promotions/scripts/datasets.txt
 
 rm $task_out
 touch $task_out
@@ -66,4 +67,4 @@ while IFS= read -r path; do
     for p in 0.16 0.2 0.25 0.3 0.4 0.5 1 1.5 2 2.5; do
         echo "shell:$priority:$min_dram:1:cd $output_dir/age && $simulator/cachesim $file oracleGeneral age -e scaler=$p 0.01 --ignore-obj-size 1" >> $task_out
     done
-done < ./datasets.txt
+done < $datasets_file
