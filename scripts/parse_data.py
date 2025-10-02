@@ -123,5 +123,7 @@ data = ReadData()
 keys = ["Trace Path", "Cache Size", "Algorithm", "Config"]
 data = data.drop_duplicates(subset=keys)
 script_dir = Path(__file__).resolve().parent
+
+os.makedirs(script_dir / "data", exist_ok=True)
 data.to_feather(script_dir / "data/data.feather")
 data.to_csv(script_dir / "data/data.csv")

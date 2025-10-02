@@ -111,11 +111,13 @@ def plt_box(
     title="",
     tick_step=None,
     showmeans=True,
-    width=0.3,
-    gap=0.3,
+    width=0.8,
+    gap=0.4,
     x_size=None,
     y_size=None,
     output_pdf=None,
+    invert=False,
+    marker_size=12,
     **kwargs,
 ) -> str:
     tmp = df.sort_values(
@@ -149,7 +151,7 @@ def plt_box(
             markerfacecolor="white",
             markeredgewidth=2.5,
             markeredgecolor="black",
-            markersize=14,
+            markersize=marker_size,
         ),
         medianprops=dict(linestyle="-", linewidth=1.25, color="black"),
         **kwargs,
@@ -203,6 +205,9 @@ def plt_box(
         plt.xticks(rotation=-30, ha="center", fontsize=fontsize)
     else:
         plt.xticks(fontsize=fontsize)
+
+    if invert:
+        plt.gca().invert_xaxis()
 
     plt.tight_layout()
     buf = io.BytesIO()
