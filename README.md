@@ -172,69 +172,69 @@ Running the `FIFO` and `LRU` experiments is necessary to generate all figures as
 You can run the two experiment first by running
 
 ```
-grep -Ei '\blru\b|\bfifo\b' task > fifo_lru_task
+grep -Ei '\b(lru|fifo)\b' task > fifo_lru_task
 cd distComp; python redisManager.py --task loadTask --taskfile fifo_lru_task
 ```
 Here's the list of minimal experiment you can run to reproduce specific figures on our paper.
 
 1. **figures 1a, 1b**
    ```bash
-   grep -Ei '\b(lru|fifo|lru-delay|lru-prob|batch|clock|delayfr|age)\b' task > fig1_task
+   grep -Ei '\b(lru-delay|lru-prob|batch|clock|delayfr|age)\b' task > fig1_task
    cd distComp; python redisManager.py --task loadTask --taskfile fig1_task
    ```
 2. **figures 2a, 2b, 2c**
    ```bash
-   grep -Ei '\b(lru|fifo|lru-prob)\b' task > fig2_task
+   grep -Ei '\b(lru-prob)\b' task > fig2_task
    cd distComp; python redisManager.py --task loadTask --taskfile fig2_task
    ```
 3. **figures 3a, 3b, 3c**
    ```bash
-   grep -Ei '\b(lru|fifo|batch)\b' task > fig3_task
+   grep -Ei '\b(batch)\b' task > fig3_task
    cd distComp; python redisManager.py --task loadTask --taskfile fig3_task
    ```
 4. **figures 4a, 4b, 4c**
    ```bash
-   grep -Ei '\b(lru|fifo|lru-delay)\b' task > fig4_task
+   grep -Ei '\b(lru-delay)\b' task > fig4_task
    cd distComp; python redisManager.py --task loadTask --taskfile fig4_task
    ```
 5. **figures 5a, 5b, 5c**
    ```bash
-   grep -Ei '\b(lru|fifo|clock)\b' task > fig5_task
+   grep -Ei '\b(clock)\b' task > fig5_task
    cd distComp; python redisManager.py --task loadTask --taskfile fig5_task
    ```
 6. **figures 6a, 6b**
    ```bash
-   grep -Ei '\b(lru|fifo|randomK)\b' task > fig6_task
+   grep -Ei '\b(random)\b' task > fig6_task
    cd distComp; python redisManager.py --task loadTask --taskfile fig6_task
    ```
 7. **figures 7a**
    ```bash
-   grep -Ei '\b(lru|fifo|lru-prob)\b' task > fig7a_task
+   grep -Ei '\b(lru-prob)\b' task > fig7a_task
    cd distComp; python redisManager.py --task loadTask --taskfile fig7a_task
    ```
 8. **figures 7b**
    ```bash
-   grep -Ei '\b(lru|fifo|batch)\b' task > fig7b_task
+   grep -Ei '\b(batch)\b' task > fig7b_task
    cd distComp; python redisManager.py --task loadTask --taskfile fig7b_task
    ```
 9. **figures 7c**
    ```bash
-   grep -Ei '\b(lru|fifo|lru-delay)\b' task > fig7c_task
+   grep -Ei '\b(lru-delay)\b' task > fig7c_task
    cd distComp; python redisManager.py --task loadTask --taskfile fig7c_task
    ```
 10. **figures 7d**
     ```bash
-    grep -Ei '\b(lru|fifo|clock)\b' task > fig7d_task
+    grep -Ei '\b(clock)\b' task > fig7d_task
     cd distComp; python redisManager.py --task loadTask --taskfile fig7d_task
     ```
 11. **figures 8a, 8b**
     ```bash
-    grep -Ei '\b(lru|fifo|arc)\b' task > fig8ab_task
+    grep -Ei '\b(arc)\b' task > fig8ab_task
     cd distComp; python redisManager.py --task loadTask --taskfile fig8ab_task
     ```
 12. **figures 8c, 8d**
     ```bash
-    grep -Ei '\b(lru|fifo|twoq)\b' task > fig8cd_task
+    grep -Ei '\b(twoq)\b' task > fig8cd_task
     cd distComp; python redisManager.py --task loadTask --taskfile fig8cd_task
     ```
 13. **figures 9a, 9b, 9c**
@@ -245,17 +245,17 @@ Here's the list of minimal experiment you can run to reproduce specific figures 
     ```
 15. **figures 11a, 11b, 11c**
     ```bash
-    grep -Ei '\b(lru|fifo|lru-delay|lru-prob|batch|clock|delayfr|age)\b' task > fig11_task
+    grep -Ei '\b(lru-delay|lru-prob|batch|clock|delayfr|age)\b' task > fig11_task
     cd distComp; python redisManager.py --task loadTask --taskfile fig11_task
     ```
 16. **figures 12a, 12b, 12c**
     ```bash
-    grep -Ei '\b(lru|fifo|delayfr)\b' task > fig12_task
+    grep -Ei '\b(delayfr)\b' task > fig12_task
     cd distComp; python redisManager.py --task loadTask --taskfile fig12_task
     ```
 17. **figures 13a, 13b, 13c**
     ```bash
-    grep -Ei '\b(lru|fifo|age)\b' task > fig13_task
+    grep -Ei '\b(age)\b' task > fig13_task
     cd distComp; python redisManager.py --task loadTask --taskfile fig13_task
     ```
 
