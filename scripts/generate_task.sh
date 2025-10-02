@@ -56,7 +56,9 @@ while IFS= read -r path; do
     echo "shell:$priority:$min_dram:1:cd /mnt/nfs/lazy_promotions/new_results/twoq_delay && ~/bobCacheSim/build/bin/cachesim $file oracleGeneral twoq-delay 0.01 --ignore-obj-size 1" >> $task_out
     echo "shell:$priority:$min_dram:1:cd /mnt/nfs/lazy_promotions/new_results/twoq_batch && ~/bobCacheSim/build/bin/cachesim $file oracleGeneral twoq-batch 0.01 --ignore-obj-size 1" >> $task_out
     echo "shell:$priority:$min_dram:1:cd /mnt/nfs/lazy_promotions/new_results/twoq_fr && ~/bobCacheSim/build/bin/cachesim $file oracleGeneral twoq-fr 0.01 --ignore-obj-size 1" >> $task_out
+
     echo "shell:$priority:$min_dram:1:cd /mnt/nfs/lazy_promotions/new_results/fifo && ~/bobCacheSim/build/bin/cachesim $file oracleGeneral fifo 0.01 --ignore-obj-size 1" >> $task_out
+    echo "shell:$priority:$min_dram:1:cd /mnt/nfs/lazy_promotions/new_results/lru && ~/bobCacheSim/build/bin/cachesim $file oracleGeneral lru 0.01 --ignore-obj-size 1" >> $task_out
     for p in 0.01 0.05 0.1 0.2 0.4 0.5; do
         echo "shell:$priority:$min_dram:1:cd /mnt/nfs/lazy_promotions/new_results/delayfr && ~/bobCacheSim/build/bin/cachesim $file oracleGeneral delayfr -e delay-ratio=$p 0.01 --ignore-obj-size 1" >> $task_out
     done
