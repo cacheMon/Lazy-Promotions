@@ -11,7 +11,7 @@ def figure1a(df: pd.DataFrame):
 def figure1b(df: pd.DataFrame):
     data = df.query(
         '(Algorithm == "Delay" and Scale == 0.2) or'
-        '(Algorithm == "Prob" and Scale == 0.4) or'
+        '(Algorithm == "Prob" and Scale == 0.5) or'
         '(Algorithm == "Batch" and Scale == 0.5) or'
         '(Algorithm == "FR" and Bit == 1) or'
         '(Algorithm == "D-FR" and Scale == 0.05 and Bit == 1) or'
