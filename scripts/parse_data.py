@@ -23,7 +23,8 @@ algorithms = {
     "TwoQ": "TwoQ",
     "Clock": "FR",
     "DelayFR": "D-FR",
-    "Random": "Random",
+    "Random": "RandomK",
+    "RandomLRU": "Random",
     "FIFO": "FIFO",
     "LRU": "LRU",
 }
@@ -57,6 +58,7 @@ parse_specific_params = {
     "TwoQ": parse_variant,
     "Clock": parse_clock,
     "DelayFR": parse_dclock,
+    "RandomLRU": parse_scale,
     "Random": parse_scale,
     "FIFO": lambda a, b: None,
     "LRU": lambda a, b: None,
