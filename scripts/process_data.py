@@ -83,10 +83,8 @@ def ProcessData(df: pd.DataFrame):
     return df
 
 
-if len(sys.argv) < 2:
-    raise ValueError("Missing required argument: feather")
-df = pd.read_feather(sys.argv[1])
-
+script_dir = Path(__file__).resolve().parent
+df = pd.read_feather(script_dir / "data/data.feather")
 processed = ProcessData(df)
-processed.to_csv("data/processed.csv")
-processed.to_feather("data/processed.feather")
+processed.to_csv(script_dir / "data/processed.csv")
+processed.to_feather(script_dir / "data/processed.feather")

@@ -104,8 +104,6 @@ def ReadData():
     }
     rows = []
     outputs = Path(DATA_PATH).rglob("*")
-    # __import__("pprint").pprint(list(outputs))
-    # exit()
     for file in outputs:
         if os.path.isdir(file):
             continue
@@ -124,7 +122,6 @@ def ReadData():
 data = ReadData()
 keys = ["Trace Path", "Cache Size", "Algorithm", "Config"]
 data = data.drop_duplicates(subset=keys)
-print(data)
-print(data["Algorithm"].unique())
-data.to_feather("data/data.feather")
-data.to_csv("data/data.csv")
+script_dir = Path(__file__).resolve().parent
+data.to_feather(script_dir / "data/data.feather")
+data.to_csv(script_dir / "data/data.csv")
