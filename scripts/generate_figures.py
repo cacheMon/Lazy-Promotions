@@ -37,8 +37,8 @@ def figure1b(df: pd.DataFrame):
         order=[
             "Delay",
             "FR",
-            "Prob",
             "Batch",
+            "Prob",
             "D-FR",
             "AGE",
         ],
