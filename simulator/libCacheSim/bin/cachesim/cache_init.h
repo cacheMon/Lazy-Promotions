@@ -27,6 +27,8 @@ static inline cache_t *create_cache(const char *trace_path, const char *eviction
 
   if (strcasecmp(eviction_algo, "lru") == 0) {
     cache = LRU_init(cc_params, eviction_params);
+  } else if (strcasecmp(eviction_algo, "opt-clock") == 0) {
+    cache = OptClock_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "fifo") == 0) {
     cache = FIFO_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "twoq-delay") == 0) {
@@ -247,6 +249,8 @@ static inline cache_t *create_cache_with_version_num(const char *trace_path, con
 
   if (strcasecmp(eviction_algo, "lru") == 0) {
     cache = LRU_init(cc_params, eviction_params);
+  } else if (strcasecmp(eviction_algo, "opt-clock") == 0) {
+    cache = OptClock_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "fifo") == 0) {
     cache = FIFO_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "twoq-delay") == 0) {

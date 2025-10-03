@@ -10,7 +10,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-
 #include "../config.h"
 #include "mem.h"
 
@@ -32,6 +31,14 @@ typedef struct {
   int64_t check_time;
   int num_hits;
 } Clock_obj_metadata_t;
+
+typedef struct {
+  int freq;
+  int64_t next_access_vtime;
+  int64_t check_time;
+  int num_hits;
+  uint64_t promotion_time;
+} OptClock_obj_metadata_t;
 
 typedef struct {
   int freq;
@@ -264,6 +271,7 @@ typedef struct cache_obj {
   union {
     LFU_obj_metadata_t lfu;              // for LFU
     Clock_obj_metadata_t clock;          // for Clock
+    OptClock_obj_metadata_t opt_clock;   // for OptClock
     PredClock_obj_metadata_t predClock;  // for PredClock
     AGE_obj_metadata_t age;              // for AGE
     AGEOF_obj_metadata_t ageof;          // for AGEOF

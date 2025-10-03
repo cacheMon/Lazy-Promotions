@@ -106,7 +106,7 @@ void simulate(reader_t *reader, cache_t *cache, int report_interval, int warmup_
 
 #endif
   free_request(req);
-  cache->cache_free(cache);
+  // cache->cache_free(cache);
 }
 
 #ifdef __cplusplus

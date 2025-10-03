@@ -1,5 +1,7 @@
 
 
+#include <stdio.h>
+#include <stdlib.h>
 #ifdef __linux__
 #include <sys/sysinfo.h>
 #endif
@@ -71,69 +73,53 @@ int main(int argc, char **argv) {
 
   // used for simulating a trace multiple rounds
   if (args.n_cache_size * args.n_eviction_algo == 1) {
-    // find the
     int64_t size = req_num;
-    int *if_promote = malloc(sizeof(int) * size);
-    uint64_t *time_downgrade = malloc(sizeof(uint64_t) * size);
-    for (int i = 0; i < size; i++) {
-      if_promote[i] = -1;
-      time_downgrade[i] = UINT64_MAX;
-    }
-    int version_num = 0;
-    args.caches[0]->if_promote = if_promote;
-    args.caches[0]->time_downgrade = time_downgrade;
-    args.caches[0]->version_num = version_num;
-    args.caches[0]->mode_optimal_search = true;
+    cache_t *cache = args.caches[0];
+    if (cache->n_iterations == 0) cache->n_iterations = 1;
 
-    for (int i = 0; i < 1; i++) {
-      simulate(args.reader, args.caches[0], args.report_interval, args.warmup_sec, args.ofilepath,
-               args.ignore_obj_size);
+    for (int i = 0; i < cache->n_iterations; i++) {
+      simulate(args.reader, cache, args.report_interval, args.warmup_sec, args.ofilepath, args.ignore_obj_size);
       reset_reader(args.reader);
-      cache_reset(&args, version_num);
-      version_num++;
-      args.caches[0]->version_num = version_num;
-      args.caches[0]->n_req = 0;
-      args.caches[0]->if_promote = if_promote;
-      args.caches[0]->time_downgrade = time_downgrade;
-      args.caches[0]->mode_optimal_search = true;
+      if (cache->reset_cache) cache->reset_cache(cache);
     }
-    free(if_promote);
-    free(time_downgrade);
+
     free_arg(&args);
     return 0;
   } else {
+    WARN("Multi Algo is not supported for this simulator");
+    exit(-1);
     // basically do the same thing for multi caches
-    int64_t size = req_num;
-    int **if_promotes = malloc(sizeof(int *) * args.n_cache_size);
-    uint64_t **time_downgrades = malloc(sizeof(uint64_t *) * args.n_cache_size);
-    for (int i = 0; i < args.n_cache_size; i++) {
-      if_promotes[i] = malloc(sizeof(int) * size);
-      time_downgrades[i] = malloc(sizeof(uint64_t) * size);
-      for (int j = 0; j < size; j++) {
-        if_promotes[i][j] = -1;
-        time_downgrades[i][j] = UINT64_MAX;
-      }
-    }
-    int version_num = 0;
-    for (int i = 0; i < 1; i++) {
-      for (int j = 0; j < args.n_cache_size; j++) {
-        args.caches[j]->if_promote = if_promotes[j];
-        args.caches[j]->time_downgrade = time_downgrades[j];
-        args.caches[j]->version_num = version_num;
-        args.caches[j]->mode_optimal_search = true;
-      }
-      cache_stat_t *result =
-          simulate_with_multi_caches(args.reader, args.caches, args.n_cache_size * args.n_eviction_algo, NULL, 0,
-                                     args.warmup_sec, args.n_thread, true);
-      dump(args, result);
-      // if (args.n_cache_size * args.n_eviction_algo > 0)
-      //   my_free(sizeof(cache_stat_t) * args.n_cache_size * args.n_eviction_algo, result);
-
-      reset_reader(args.reader);
-
-      version_num++;
-      cache_reset(&args, version_num);
-    }
+    // int64_t size = req_num;
+    // int **if_promotes = malloc(sizeof(int *) * args.n_cache_size);
+    // uint64_t **time_downgrades = malloc(sizeof(uint64_t *) * args.n_cache_size);
+    // for (int i = 0; i < args.n_cache_size; i++) {
+    //   if_promotes[i] = malloc(sizeof(int) * size);
+    //   time_downgrades[i] = malloc(sizeof(uint64_t) * size);
+    //   for (int j = 0; j < size; j++) {
+    //     if_promotes[i][j] = -1;
+    //     time_downgrades[i][j] = UINT64_MAX;
+    //   }
+    // }
+    // int version_num = 0;
+    // for (int i = 0; i < args.caches[0]->n_iterations; i++) {
+    //   for (int j = 0; j < args.n_cache_size; j++) {
+    //     args.caches[j]->if_promote = if_promotes[j];
+    //     args.caches[j]->time_downgrade = time_downgrades[j];
+    //     args.caches[j]->version_num = version_num;
+    //     args.caches[j]->mode_optimal_search = true;
+    //   }
+    //   cache_stat_t *result =
+    //       simulate_with_multi_caches(args.reader, args.caches, args.n_cache_size * args.n_eviction_algo, NULL, 0,
+    //                                  args.warmup_sec, args.n_thread, true);
+    //   dump(args, result);
+    //   // if (args.n_cache_size * args.n_eviction_algo > 0)
+    //   //   my_free(sizeof(cache_stat_t) * args.n_cache_size * args.n_eviction_algo, result);
+    //
+    //   reset_reader(args.reader);
+    //
+    //   version_num++;
+    //   cache_reset(&args, version_num);
+    // }
     return 0;
   }
 

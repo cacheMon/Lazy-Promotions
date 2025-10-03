@@ -121,6 +121,8 @@ typedef struct {
   float scaler;
 } AGE_params_t;
 
+cache_t *OptClock_init(const common_cache_params_t ccache_params, const char *cache_specific_params);
+
 cache_t *TwoQ_LRU_init(const common_cache_params_t ccache_params, const char *cache_specific_params);
 cache_t *TwoQ_Delay_init(const common_cache_params_t ccache_params, const char *cache_specific_params);
 cache_t *TwoQ_Prob_init(const common_cache_params_t ccache_params, const char *cache_specific_params);
