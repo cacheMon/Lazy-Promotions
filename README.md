@@ -39,10 +39,18 @@ This script supports Ubuntu, CentOS, and macOS.
 After installing the dependencies, you can build the simulator:
 
 ```bash
-mkdir _build
+mkdir -p _build
 cd _build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make [-j]
+```
+
+On stricter compiler you might need to run
+```bash
+mkdir -p _build
+cd _build
+cmake -DCMAKE_C_FLAGS="-Wno-implicit-int" -DCMAKE_CXX_FLAGS="-std=c++17 -include cstdint -Wno-template-body -fpermissive" ..
+make -j
 ```
 
 The simulator executable `cachesim` will be available in the `simulator/_build/bin/` directory.
