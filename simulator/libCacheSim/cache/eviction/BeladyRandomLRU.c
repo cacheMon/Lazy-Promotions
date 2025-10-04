@@ -1,8 +1,8 @@
 //
-//  RandomBelady.c
+//  BeladyRandomLRU.c
 //  libCacheSim
 //
-//  RandomBelady eviction
+//  BeladyRandomLRU eviction
 //
 //  Created by Juncheng on 8/2/16.
 //  Copyright © 2016 Juncheng. All rights reserved.
@@ -18,10 +18,12 @@ extern "C" {
 
 static const char *DEFAULT_PARAMS = "scaler=1.5";
 
-typedef struct RandomBelady_params {
+typedef struct BeladyRandomLRU_params {
   int64_t n_miss;
   double scaler;
-} RandomBelady_params_t;
+  uint64_t early_eviction;
+  uint64_t total_eviction;
+} BeladyRandomLRU_params_t;
 
 // ***********************************************************************
 // ****                                                               ****
@@ -29,15 +31,15 @@ typedef struct RandomBelady_params {
 // ****                                                               ****
 // ***********************************************************************
 
-static void RandomBelady_free(cache_t *cache);
-static bool RandomBelady_get(cache_t *cache, const request_t *req);
-static cache_obj_t *RandomBelady_find(cache_t *cache, const request_t *req, const bool update_cache);
-static cache_obj_t *RandomBelady_insert(cache_t *cache, const request_t *req);
-static cache_obj_t *RandomBelady_to_evict(cache_t *cache, const request_t *req);
-static void RandomBelady_evict(cache_t *cache, const request_t *req);
-static bool RandomBelady_remove(cache_t *cache, const obj_id_t obj_id);
+static void BeladyRandomLRU_free(cache_t *cache);
+static bool BeladyRandomLRU_get(cache_t *cache, const request_t *req);
+static cache_obj_t *BeladyRandomLRU_find(cache_t *cache, const request_t *req, const bool update_cache);
+static cache_obj_t *BeladyRandomLRU_insert(cache_t *cache, const request_t *req);
+static cache_obj_t *BeladyRandomLRU_to_evict(cache_t *cache, const request_t *req);
+static void BeladyRandomLRU_evict(cache_t *cache, const request_t *req);
+static bool BeladyRandomLRU_remove(cache_t *cache, const obj_id_t obj_id);
 static bool can_evict(cache_t *cache, const request_t *req);
-static void RandomBelady_parse_params(cache_t *cache, const char *cache_specific_params);
+static void BeladyRandomLRU_parse_params(cache_t *cache, const char *cache_specific_params);
 
 // ***********************************************************************
 // ****                                                               ****
@@ -46,37 +48,40 @@ static void RandomBelady_parse_params(cache_t *cache, const char *cache_specific
 // ****                       init, free, get                         ****
 // ***********************************************************************
 /**
- * @brief initialize a RandomBelady cache
+ * @brief initialize a BeladyRandomLRU cache
  *
  * @param ccache_params some common cache parameters
- * @param cache_specific_params RandomBelady specific parameters, should be NULL
+ * @param cache_specific_params BeladyRandomLRU specific parameters, should be NULL
  */
-cache_t *RandomBelady_init(const common_cache_params_t ccache_params, const char *cache_specific_params) {
+cache_t *BeladyRandomLRU_init(const common_cache_params_t ccache_params, const char *cache_specific_params) {
   common_cache_params_t ccache_params_copy = ccache_params;
   ccache_params_copy.hashpower = MAX(12, ccache_params_copy.hashpower - 8);
 
-  cache_t *cache = cache_struct_init("RandomBelady-2", ccache_params_copy, cache_specific_params);
-  cache->cache_init = RandomBelady_init;
-  cache->cache_free = RandomBelady_free;
-  cache->get = RandomBelady_get;
-  cache->find = RandomBelady_find;
-  cache->insert = RandomBelady_insert;
-  cache->to_evict = RandomBelady_to_evict;
-  cache->evict = RandomBelady_evict;
-  cache->remove = RandomBelady_remove;
+  cache_t *cache = cache_struct_init("BeladyRandomLRU-2", ccache_params_copy, cache_specific_params);
+  cache->cache_init = BeladyRandomLRU_init;
+  cache->cache_free = BeladyRandomLRU_free;
+  cache->get = BeladyRandomLRU_get;
+  cache->find = BeladyRandomLRU_find;
+  cache->insert = BeladyRandomLRU_insert;
+  cache->to_evict = BeladyRandomLRU_to_evict;
+  cache->evict = BeladyRandomLRU_evict;
+  cache->remove = BeladyRandomLRU_remove;
 
-  cache->eviction_params = my_malloc(RandomBelady_params_t);
-  ((RandomBelady_params_t *)cache->eviction_params)->n_miss = 0;
-  ((RandomBelady_params_t *)cache->eviction_params)->scaler = 1.5; //default
+  cache->eviction_params = my_malloc(BeladyRandomLRU_params_t);
+  BeladyRandomLRU_params_t *params = cache->eviction_params;
+  params->n_miss = 0;
+  params->scaler = 1.5;
+  params->early_eviction = 0;
+  params->total_eviction = 0;
 
   // parse the cache specific parameters
-  RandomBelady_parse_params(cache, DEFAULT_PARAMS);
+  BeladyRandomLRU_parse_params(cache, DEFAULT_PARAMS);
   if (cache_specific_params != NULL) {
-    RandomBelady_parse_params(cache, cache_specific_params);
+    BeladyRandomLRU_parse_params(cache, cache_specific_params);
   }
 
-  snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f",
-            ((RandomBelady_params_t *)cache->eviction_params)->scaler);
+  snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "BeladyRandomLRU-%f",
+           ((BeladyRandomLRU_params_t *)cache->eviction_params)->scaler);
 
   return cache;
 }
@@ -86,7 +91,7 @@ cache_t *RandomBelady_init(const common_cache_params_t ccache_params, const char
  *
  * @param cache
  */
-static void RandomBelady_free(cache_t *cache) { cache_struct_free(cache); }
+static void BeladyRandomLRU_free(cache_t *cache) { cache_struct_free(cache); }
 
 /**
  * @brief this function is the user facing API
@@ -107,7 +112,7 @@ static void RandomBelady_free(cache_t *cache) { cache_struct_free(cache); }
  * @param req
  * @return true if cache hit, false if cache miss
  */
-static bool RandomBelady_get(cache_t *cache, const request_t *req) { return cache_get_base(cache, req); }
+static bool BeladyRandomLRU_get(cache_t *cache, const request_t *req) { return cache_get_base(cache, req); }
 
 // ***********************************************************************
 // ****                                                               ****
@@ -125,15 +130,15 @@ static bool RandomBelady_get(cache_t *cache, const request_t *req) { return cach
  *  and if the object is expired, it is removed from the cache
  * @return true on hit, false on miss
  */
-static cache_obj_t *RandomBelady_find(cache_t *cache, const request_t *req, const bool update_cache) {
+static cache_obj_t *BeladyRandomLRU_find(cache_t *cache, const request_t *req, const bool update_cache) {
   cache_obj_t *obj = cache_find_base(cache, req, update_cache);
   if (update_cache && obj == NULL) {
-    ((RandomBelady_params_t *)cache->eviction_params)->n_miss++;
+    ((BeladyRandomLRU_params_t *)cache->eviction_params)->n_miss++;
   }
 
   if (update_cache && obj != NULL) {
     if (can_evict(cache, req)) {
-      RandomBelady_remove(cache, req->obj_id);
+      BeladyRandomLRU_remove(cache, req->obj_id);
     } else {
       obj->Random.last_access_vtime = cache->n_req;
     }
@@ -152,7 +157,7 @@ static cache_obj_t *RandomBelady_find(cache_t *cache, const request_t *req, cons
  * @param req
  * @return the inserted object
  */
-static cache_obj_t *RandomBelady_insert(cache_t *cache, const request_t *req) {
+static cache_obj_t *BeladyRandomLRU_insert(cache_t *cache, const request_t *req) {
   if (can_evict(cache, req)) {
     return NULL;
   }
@@ -171,21 +176,21 @@ static cache_obj_t *RandomBelady_insert(cache_t *cache, const request_t *req) {
  * @param cache the cache
  * @return the object to be evicted
  */
-static cache_obj_t *RandomBelady_to_evict(cache_t *cache, const request_t *req) {
-  return hashtable_rand_obj(cache->hashtable);
-}
-// static cache_obj_t *RandomBelady_to_evict(cache_t *cache, const request_t *req) {
-// #define K 16
-//   cache_obj_t *lru_obj = hashtable_rand_obj(cache->hashtable), *curr_obj = NULL;
-
-//   for (int i = 0; i < K-1; i++) {
-//     curr_obj = hashtable_rand_obj(cache->hashtable);
-//     if (curr_obj->Random.last_access_vtime < lru_obj->Random.last_access_vtime) {
-//       lru_obj = curr_obj;
-//     }
-//   }
-//   return lru_obj;
+// static cache_obj_t *BeladyRandomLRU_to_evict(cache_t *cache, const request_t *req) {
+//   return hashtable_rand_obj(cache->hashtable);
 // }
+static cache_obj_t *BeladyRandomLRU_to_evict(cache_t *cache, const request_t *req) {
+#define K 16
+  cache_obj_t *lru_obj = hashtable_rand_obj(cache->hashtable), *curr_obj = NULL;
+
+  for (int i = 0; i < K - 1; i++) {
+    curr_obj = hashtable_rand_obj(cache->hashtable);
+    if (curr_obj->Random.last_access_vtime < lru_obj->Random.last_access_vtime) {
+      lru_obj = curr_obj;
+    }
+  }
+  return lru_obj;
+}
 
 /**
  * @brief evict an object from the cache
@@ -195,10 +200,14 @@ static cache_obj_t *RandomBelady_to_evict(cache_t *cache, const request_t *req) 
  * @param cache
  * @param req not used
  */
-static void RandomBelady_evict(cache_t *cache, const request_t *req) {
-  cache_obj_t *obj_to_evict = RandomBelady_to_evict(cache, req);
+static void BeladyRandomLRU_evict(cache_t *cache, const request_t *req) {
+  cache_obj_t *obj_to_evict = BeladyRandomLRU_to_evict(cache, req);
   DEBUG_ASSERT(obj_to_evict->obj_size != 0);
   cache_evict_base(cache, obj_to_evict, true);
+  BeladyRandomLRU_params_t *params = cache->eviction_params;
+  params->total_eviction += 1;
+  snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f-fbee=%f", params->scaler,
+           (float)params->early_eviction / params->total_eviction);
 }
 
 /**
@@ -214,7 +223,7 @@ static void RandomBelady_evict(cache_t *cache, const request_t *req) {
  * @return true if the object is removed, false if the object is not in the
  * cache
  */
-static bool RandomBelady_remove(cache_t *cache, const obj_id_t obj_id) {
+static bool BeladyRandomLRU_remove(cache_t *cache, const obj_id_t obj_id) {
   cache_obj_t *obj = hashtable_find_obj_id(cache->hashtable, obj_id);
   if (obj == NULL) {
     return false;
@@ -225,13 +234,18 @@ static bool RandomBelady_remove(cache_t *cache, const obj_id_t obj_id) {
 }
 
 static bool can_evict(cache_t *cache, const request_t *req) {
+  BeladyRandomLRU_params_t *params = cache->eviction_params;
   if (req->next_access_vtime == INT64_MAX) {
+    params->total_eviction += 1;
+    params->early_eviction += 1;
+    snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f-fbee=%f", params->scaler,
+             (float)params->early_eviction / params->total_eviction);
     return true;
   }
 
   int64_t n_req = cache->n_req;
-  int64_t n_miss = ((RandomBelady_params_t *)cache->eviction_params)->n_miss;
-  double scaler = ((RandomBelady_params_t *)cache->eviction_params)->scaler;
+  int64_t n_miss = ((BeladyRandomLRU_params_t *)cache->eviction_params)->n_miss;
+  double scaler = ((BeladyRandomLRU_params_t *)cache->eviction_params)->scaler;
   double miss_ratio = (double)n_miss / (double)cache->n_req;
   int64_t dist = (double)req->next_access_vtime - cache->n_req;
   int64_t threshold = ((double)cache->cache_size / miss_ratio);
@@ -244,6 +258,10 @@ static bool can_evict(cache_t *cache, const request_t *req) {
   }
 
   if (dist > threshold_product) {
+    params->total_eviction += 1;
+    params->early_eviction += 1;
+    snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f-fbee=%f", params->scaler,
+             (float)params->early_eviction / params->total_eviction);
     return true;
   } else {
     return false;
@@ -252,9 +270,8 @@ static bool can_evict(cache_t *cache, const request_t *req) {
   return false;
 }
 
-static void RandomBelady_parse_params(cache_t *cache,
-                               const char *cache_specific_params) {
-  RandomBelady_params_t *params = (RandomBelady_params_t *)cache->eviction_params;
+static void BeladyRandomLRU_parse_params(cache_t *cache, const char *cache_specific_params) {
+  BeladyRandomLRU_params_t *params = (BeladyRandomLRU_params_t *)cache->eviction_params;
   char *params_str = strdup(cache_specific_params);
   char *old_params_str = params_str;
   char *end;
@@ -269,7 +286,6 @@ static void RandomBelady_parse_params(cache_t *cache,
     while (params_str != NULL && *params_str == ' ') {
       params_str++;
     }
-
 
     if (strcasecmp(key, "scaler") == 0) {
       params->scaler = (float)strtod(value, &end);

@@ -73,6 +73,7 @@ set(sourceC
 
         FrozenHot.c
         RandomBelady.c
+        BeladyRandomLRU.c
         RandomLRU.c
 
 )

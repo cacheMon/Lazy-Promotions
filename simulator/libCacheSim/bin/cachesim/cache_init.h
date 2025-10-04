@@ -196,6 +196,8 @@ static inline cache_t *create_cache(const char *trace_path, const char *eviction
     cache = lpFIFO_batch_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "sieve") == 0) {
     cache = Sieve_init(cc_params, eviction_params);
+  } else if (strcasecmp(eviction_algo, "beladyRandomLRU") == 0) {
+    cache = BeladyRandomLRU_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "randomBelady") == 0) {
     cache = RandomBelady_init(cc_params, eviction_params);
   } else if (strcasecmp(eviction_algo, "randomLRU") == 0) {

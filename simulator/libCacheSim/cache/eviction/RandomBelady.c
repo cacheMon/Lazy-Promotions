@@ -91,7 +91,7 @@ cache_t *RandomBelady_init(const common_cache_params_t ccache_params, const char
 
   return cache;
 }
-static void RandomBelady_reset(cache_t *cache) { printf("Reset\n"); }
+static void RandomBelady_reset(cache_t *cache) {}
 
 /**
  * free resources used by this cache
