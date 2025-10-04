@@ -8,6 +8,9 @@
 //  Copyright © 2016 Juncheng. All rights reserved.
 //
 
+#include <stdint.h>
+#include <stdio.h>
+
 #include "../../dataStructure/hashtable/hashtable.h"
 #include "../../include/libCacheSim/evictionAlgo.h"
 #include "../../include/libCacheSim/macro.h"
@@ -19,6 +22,8 @@ extern "C" {
 static const char *DEFAULT_PARAMS = "scaler=1.5";
 
 typedef struct RandomBelady_params {
+  uint64_t total_eviction;
+  uint64_t early_eviction;
   int64_t n_miss;
   double scaler;
 } RandomBelady_params_t;
@@ -38,6 +43,7 @@ static void RandomBelady_evict(cache_t *cache, const request_t *req);
 static bool RandomBelady_remove(cache_t *cache, const obj_id_t obj_id);
 static bool can_evict(cache_t *cache, const request_t *req);
 static void RandomBelady_parse_params(cache_t *cache, const char *cache_specific_params);
+static void RandomBelady_reset(cache_t *cache);
 
 // ***********************************************************************
 // ****                                                               ****
@@ -64,10 +70,15 @@ cache_t *RandomBelady_init(const common_cache_params_t ccache_params, const char
   cache->to_evict = RandomBelady_to_evict;
   cache->evict = RandomBelady_evict;
   cache->remove = RandomBelady_remove;
+  cache->reset_cache = RandomBelady_reset;
 
   cache->eviction_params = my_malloc(RandomBelady_params_t);
-  ((RandomBelady_params_t *)cache->eviction_params)->n_miss = 0;
-  ((RandomBelady_params_t *)cache->eviction_params)->scaler = 1.5; //default
+
+  RandomBelady_params_t *params = cache->eviction_params;
+  params->n_miss = 0;
+  params->scaler = 1.5;  // default
+  params->early_eviction = 0;
+  params->total_eviction = 0;
 
   // parse the cache specific parameters
   RandomBelady_parse_params(cache, DEFAULT_PARAMS);
@@ -76,10 +87,11 @@ cache_t *RandomBelady_init(const common_cache_params_t ccache_params, const char
   }
 
   snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f",
-            ((RandomBelady_params_t *)cache->eviction_params)->scaler);
+           ((RandomBelady_params_t *)cache->eviction_params)->scaler);
 
   return cache;
 }
+static void RandomBelady_reset(cache_t *cache) { printf("Reset\n"); }
 
 /**
  * free resources used by this cache
@@ -198,6 +210,10 @@ static cache_obj_t *RandomBelady_to_evict(cache_t *cache, const request_t *req) 
 static void RandomBelady_evict(cache_t *cache, const request_t *req) {
   cache_obj_t *obj_to_evict = RandomBelady_to_evict(cache, req);
   DEBUG_ASSERT(obj_to_evict->obj_size != 0);
+  RandomBelady_params_t *params = cache->eviction_params;
+  params->total_eviction += 1;
+  snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f-fbee=%f", params->scaler,
+           (float)params->early_eviction / params->total_eviction);
   cache_evict_base(cache, obj_to_evict, true);
 }
 
@@ -225,7 +241,12 @@ static bool RandomBelady_remove(cache_t *cache, const obj_id_t obj_id) {
 }
 
 static bool can_evict(cache_t *cache, const request_t *req) {
+  RandomBelady_params_t *params = cache->eviction_params;
   if (req->next_access_vtime == INT64_MAX) {
+    params->total_eviction += 1;
+    params->early_eviction += 1;
+    snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f-fbee=%f", params->scaler,
+             (float)params->early_eviction / params->total_eviction);
     return true;
   }
 
@@ -244,6 +265,10 @@ static bool can_evict(cache_t *cache, const request_t *req) {
   }
 
   if (dist > threshold_product) {
+    params->total_eviction += 1;
+    params->early_eviction += 1;
+    snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f-fbee=%f", params->scaler,
+             (float)params->early_eviction / params->total_eviction);
     return true;
   } else {
     return false;
@@ -252,8 +277,7 @@ static bool can_evict(cache_t *cache, const request_t *req) {
   return false;
 }
 
-static void RandomBelady_parse_params(cache_t *cache,
-                               const char *cache_specific_params) {
+static void RandomBelady_parse_params(cache_t *cache, const char *cache_specific_params) {
   RandomBelady_params_t *params = (RandomBelady_params_t *)cache->eviction_params;
   char *params_str = strdup(cache_specific_params);
   char *old_params_str = params_str;
@@ -269,7 +293,6 @@ static void RandomBelady_parse_params(cache_t *cache,
     while (params_str != NULL && *params_str == ' ') {
       params_str++;
     }
-
 
     if (strcasecmp(key, "scaler") == 0) {
       params->scaler = (float)strtod(value, &end);
