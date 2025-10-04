@@ -338,6 +338,31 @@ def figure8d(df: pd.DataFrame):
     )
 
 
+def figure9a(df: pd.DataFrame):
+    data = df.query('Algorithm == "Belady-RandomLRU"')
+    data.loc[data["Scale"] > 10, "Scale"] = np.inf
+
+    def format_scale(v):
+        if np.isinf(v):
+            return "inf"
+        return str(int(v))
+
+    data["Scale"] = data["Scale"].apply(format_scale)
+    plt_wrapper.plt_box(
+        data,
+        y="Relative Miss Ratio [LRU]",
+        y_label="Miss ratio relative to LRU",
+        x="Scale",
+        x_label="Factor",
+        x_size=12,
+        tick_step=0.05,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure9a.pdf",
+        marker_size=11,
+    )
+
+
 def figure9b(df: pd.DataFrame):
     data = df.query('Algorithm == "Belady-Random"')
     data.loc[data["Scale"] > 10, "Scale"] = np.inf

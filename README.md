@@ -121,25 +121,29 @@ Here are the basic commands for each algorithm discussed in the paper:
 
 **7. RandomLRU**
 ```bash
-./_build/bin/cachesim $file oracleGeneral randomK -e n-samples=5 0.01 --ignore-obj-size 1
+./_build/bin/cachesim $file oracleGeneral randomLRU -e n-samples=5 0.01 --ignore-obj-size 1
 ```
 
-**8. Belady-FR**
+**8. Belady-Random**
 ```bash
-./_build/bin/cachesim $file oracleGeneral beladyclock -e scaler=0.5 0.01 --ignore-obj-size 1
+./_build/bin/cachesim $file oracleGeneral randomBelady -e scaler=5 0.01 --ignore-obj-size 1
+```
+**9. Belady-RandomLRU**
+```bash
+./_build/bin/cachesim $file oracleGeneral beladyRandomLRU -e scaler=5 0.01 --ignore-obj-size 1
 ```
 
-**9. Offline-FR**
+**10. Offline-FR**
 ```bash
 ./_build/bin/cachesim $file oracleGeneral opt-clock -e iter=5 0.01 --ignore-obj-size 1
 ```
 
-**10. Delay-FR**
+**11. Delay-FR**
 ```bash
 ./_build/bin/cachesim $file oracleGeneral delayfr -e delay-ratio=0.05 0.01 --ignore-obj-size 1
 ```
 
-**11. AGE**
+**12. AGE**
 ```bash
 ./_build/bin/cachesim $file oracleGeneral age -e scaler=0.4 0.01 --ignore-obj-size 1
 ```
@@ -264,9 +268,15 @@ Here's the list of minimal experiment you can run to reproduce specific figures 
     grep -Ei 'twoq' ~/task > ~/fig8cd_task
     cd distComp; python redisManager.py --task loadTask --taskfile ~/fig8cd_task
     ```
-13. **figures 9a, 9b, 9c**
+13. **figures 9a, 9c**
     ```bash
-    TODO
+    grep -Ei ' (beladyRandomLRU) ' ~/task > ~/fig9ac_task
+    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig9ac_task
+    ```
+13. **figures 9b**
+    ```bash
+    grep -Ei ' (randomBelady) ' ~/task > ~/fig9b_task
+    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig9b_task
     ```
 14. **figures 10a, 10b, 10c**
     ```bash

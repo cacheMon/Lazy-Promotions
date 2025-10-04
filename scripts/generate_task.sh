@@ -50,6 +50,9 @@ while IFS= read -r path; do
     for p in 1 2 3 4 5 6 7 8 9 10 999999; do
         echo "shell:$priority:$min_dram:1:cd $output_dir/random_belady && $simulator/cachesim $file oracleGeneral randomBelady -e scaler=$p 0.01 --ignore-obj-size 1" >> $task_out
     done
+    for p in 1 2 3 4 5 6 7 8 9 10 999999; do
+        echo "shell:$priority:$min_dram:1:cd $output_dir/belady_random_lru && $simulator/cachesim $file oracleGeneral beladyRandomLRU -e scaler=$p 0.01 --ignore-obj-size 1" >> $task_out
+    done
 
     echo "shell:$priority:$min_dram:1:cd $output_dir/arc_prob && $simulator/cachesim $file oracleGeneral arc-prob 0.01 --ignore-obj-size 1" >> $task_out
     echo "shell:$priority:$min_dram:1:cd $output_dir/arc_lru && $simulator/cachesim $file oracleGeneral arc-lru 0.01 --ignore-obj-size 1" >> $task_out

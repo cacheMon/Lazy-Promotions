@@ -56,6 +56,7 @@ parse_specific_params = {
     "LRU": lambda a, b: None,
     "OptClock": parse_dclock,
     "RandomBelady": parse_belady,
+    "BeladyRandomLRU": parse_belady,
 }
 
 algorithms = {
@@ -73,6 +74,7 @@ algorithms = {
     "LRU": "LRU",
     "OptClock": "Offline-FR",
     "RandomBelady": "Belady-Random",
+    "BeladyRandomLRU": "Belady-RandomLRU",
 }
 
 
