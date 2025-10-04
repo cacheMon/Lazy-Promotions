@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib_wrapper as plt_wrapper
 import style
+import numpy as np
 
 
 def figure1a(df: pd.DataFrame):
@@ -334,6 +335,55 @@ def figure8d(df: pd.DataFrame):
         marker_size=11,
         tick_step=0.2,
         order=["Prob", "Batch", "Delay", "FR"],
+    )
+
+
+def figure9b(df: pd.DataFrame):
+    data = df.query('Algorithm == "Belady-Random"')
+    data.loc[data["Scale"] > 10, "Scale"] = np.inf
+
+    def format_scale(v):
+        if np.isinf(v):
+            return "inf"
+        return str(int(v))
+
+    data["Scale"] = data["Scale"].apply(format_scale)
+    plt_wrapper.plt_box(
+        data,
+        y="Relative Miss Ratio [LRU]",
+        y_label="Miss ratio relative to LRU",
+        x="Scale",
+        x_label="Factor",
+        x_size=12,
+        tick_step=0.05,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure9b.pdf",
+        marker_size=11,
+    )
+
+
+def figure9c(df: pd.DataFrame):
+    data = df.query('Algorithm == "Belady-Random"')
+    data.loc[data["Scale"] > 10, "Scale"] = np.inf
+
+    def format_scale(v):
+        if np.isinf(v):
+            return "inf"
+        return str(int(v))
+
+    data["Scale"] = data["Scale"].apply(format_scale)
+    plt_wrapper.plt_box(
+        data,
+        y="BEE Fraction",
+        y_label="Fraction of Belady early eviction",
+        x="Scale",
+        x_label="Factor",
+        x_size=12,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure9c.pdf",
+        marker_size=11,
     )
 
 

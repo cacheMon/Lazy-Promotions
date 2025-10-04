@@ -8,27 +8,11 @@ from pathlib import Path
 
 general_pattern = re.compile(
     r".*?\s+(?P<algo>[A-Za-z0-9_]+)"
-    r"(?:-(?P<config>[A-Za-z0-9_.-]+))?"
+    r"(?:-(?P<config>[A-Za-z0-9_.= -]+))?"
     r"\s+cache size\s+(?P<cache_size>\d+),\s+"
     r"(?P<requests>\d+)\s+req,\s+miss ratio\s+(?P<miss_ratio>\d+(?:\.\d+)?),\s+"
     r"throughput\s+(?P<throughput>\d+(?:\.\d+)?)\s+MQPS,\s+promotion\s+(?P<promotion>\d+)"
 )
-
-algorithms = {
-    "lpFIFO_batch": "Batch",
-    "LRU_delay": "Delay",
-    "lpLRU_prob": "Prob",
-    "AGE": "AGE",
-    "ARC": "ARC",
-    "TwoQ": "TwoQ",
-    "Clock": "FR",
-    "DelayFR": "D-FR",
-    "Random": "RandomK",
-    "RandomLRU": "Random",
-    "FIFO": "FIFO",
-    "LRU": "LRU",
-    "OptClock": "Offline-FR",
-}
 
 
 def parse_variant(entry: dict, config: str):
@@ -50,6 +34,13 @@ def parse_dclock(entry: dict, config: str):
     entry["Scale"] = float(config_list[1])
 
 
+def parse_belady(entry: dict, config: str):
+    config_list = config.split("-")
+    entry["Scale"] = float(config_list[0])
+    entry["BEE Fraction"] = float(config_list[1].split("=")[1])
+    entry["Config"] = config_list[0]
+
+
 parse_specific_params = {
     "lpFIFO_batch": parse_scale,
     "LRU_delay": parse_scale,
@@ -64,6 +55,24 @@ parse_specific_params = {
     "FIFO": lambda a, b: None,
     "LRU": lambda a, b: None,
     "OptClock": parse_dclock,
+    "RandomBelady": parse_belady,
+}
+
+algorithms = {
+    "lpFIFO_batch": "Batch",
+    "LRU_delay": "Delay",
+    "lpLRU_prob": "Prob",
+    "AGE": "AGE",
+    "ARC": "ARC",
+    "TwoQ": "TwoQ",
+    "Clock": "FR",
+    "DelayFR": "D-FR",
+    "Random": "RandomK",
+    "RandomLRU": "Random",
+    "FIFO": "FIFO",
+    "LRU": "LRU",
+    "OptClock": "Offline-FR",
+    "RandomBelady": "Belady-Random",
 }
 
 
