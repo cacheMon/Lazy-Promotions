@@ -50,7 +50,6 @@ static void OptClock_reset(cache_t *cache);
 struct lifetime_md {
   uint64_t lifetime_freq = 0;
 };
-
 struct OptClock_params_t {
   cache_obj_t *q_head;
   cache_obj_t *q_tail;
@@ -71,14 +70,6 @@ struct OptClock_params_t {
   std::unordered_map<obj_id_t, std::unordered_set<uint64_t>> bad_promotions =
       std::unordered_map<obj_id_t, std::unordered_set<uint64_t>>();
 };
-
-struct OptClock_data {};
-/**
- * @brief initialize a OptClock cache
- *
- * @param ccache_params some common cache parameters
- * @param cache_specific_params OptClock specific parameters as a string
- */
 cache_t *OptClock_init(const common_cache_params_t ccache_params, const char *cache_specific_params) {
   cache_t *cache = cache_struct_init("OptClock", ccache_params, cache_specific_params);
   cache->cache_init = OptClock_init;
@@ -100,9 +91,6 @@ cache_t *OptClock_init(const common_cache_params_t ccache_params, const char *ca
   cache->num_stats4 = 0;
   cache->num_stats5 = 0;
 
-#ifdef USE_BELADY
-  snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "OptClock_Belady");
-#endif
   cache->eviction_params = new OptClock_params_t;
   OptClock_params_t *params = (OptClock_params_t *)cache->eviction_params;
   params->q_head = NULL;
@@ -120,53 +108,13 @@ cache_t *OptClock_init(const common_cache_params_t ccache_params, const char *ca
   return cache;
 }
 
-/**
- * free resources used by this cache
- *
- * @param cache
- */
 static void OptClock_free(cache_t *cache) {
   delete (OptClock_params_t *)cache->eviction_params;
   cache_struct_free(cache);
 }
 
-/**
- * @brief this function is the user facing API
- * it performs the following logic
- *
- * ```
- * if obj in cache:
- *    update_metadata
- *    return true
- * else:
- *    if cache does not have enough space:
- *        evict until it has space to insert
- *    insert the object
- *    return false
- * ```
- *
- * @param cache
- * @param req
- * @return true if cache hit, false if cache miss
- */
 static bool OptClock_get(cache_t *cache, const request_t *req) { return cache_get_base(cache, req); }
 
-// ***********************************************************************
-// ****                                                               ****
-// ****       developer facing APIs (used by cache developer)         ****
-// ****                                                               ****
-// ***********************************************************************
-
-/**
- * @brief check whether an object is in the cache
- *
- * @param cache
- * @param req
- * @param update_cache whether to update the cache,
- *  if true, the object is promoted
- *  and if the object is expired, it is removed from the cache
- * @return true on hit, false on miss
- */
 static cache_obj_t *OptClock_find(cache_t *cache, const request_t *req, const bool update_cache) {
   OptClock_params_t *params = (OptClock_params_t *)cache->eviction_params;
   cache_obj_t *obj = cache_find_base(cache, req, update_cache);

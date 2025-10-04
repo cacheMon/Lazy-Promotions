@@ -337,6 +337,57 @@ def figure8d(df: pd.DataFrame):
     )
 
 
+def figure10a(df: pd.DataFrame):
+    data = df.query('Algorithm == "Offline-FR"')
+    plt_wrapper.plt_box(
+        data,
+        y="Relative Promotion [LRU]",
+        y_label="Promotions relative to LRU",
+        x="Scale",
+        x_label="# Iteration",
+        x_size=12,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure10a.pdf",
+        marker_size=11,
+        tick_step=0.2,
+    )
+
+
+def figure10b(df: pd.DataFrame):
+    data = df.query('Algorithm == "Offline-FR"')
+    plt_wrapper.plt_box(
+        data,
+        y="Relative Miss Ratio [LRU]",
+        y_label="Miss ratio relative to LRU",
+        x="Scale",
+        x_label="# Iteration",
+        x_size=12,
+        tick_step=0.02,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure10b.pdf",
+        marker_size=11,
+    )
+
+
+def figure10c(df: pd.DataFrame):
+    data = df.query('Algorithm == "Offline-FR"')
+    plt_wrapper.plt_box(
+        data,
+        y="Promotion Efficiency",
+        y_label="Promotion efficiency",
+        x="Scale",
+        x_label="# Iteration",
+        x_size=12,
+        tick_step=0.2,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure10c.pdf",
+        marker_size=11,
+    )
+
+
 def figure11a(df: pd.DataFrame):
     data = df.query(
         '(Algorithm == "Delay" and Scale == 0.2) or'

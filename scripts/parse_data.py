@@ -27,6 +27,7 @@ algorithms = {
     "RandomLRU": "Random",
     "FIFO": "FIFO",
     "LRU": "LRU",
+    "OptClock": "Offline-FR",
 }
 
 
@@ -62,6 +63,7 @@ parse_specific_params = {
     "Random": parse_scale,
     "FIFO": lambda a, b: None,
     "LRU": lambda a, b: None,
+    "OptClock": parse_dclock,
 }
 
 
@@ -71,8 +73,6 @@ def parse_line(line: str, filename: str, cache_size: float):
         d = match.groupdict()
         entry = {
             "Config": d["config"],
-            # "Scale": float(d["param"]) if d["param"] is not None else 0,
-            # "Variant": d["variant"],
             "Algorithm": algorithms[d["algo"]],
             "Real Cache Size": int(d["cache_size"]),
             "Request": int(d["requests"]),

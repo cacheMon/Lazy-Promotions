@@ -131,7 +131,7 @@ Here are the basic commands for each algorithm discussed in the paper:
 
 **9. Offline-FR**
 ```bash
-./_build/bin/cachesim $file oracleGeneral offlineFR -e scaler=0.5 0.01 --ignore-obj-size 1
+./_build/bin/cachesim $file oracleGeneral opt-clock -e iter=5 0.01 --ignore-obj-size 1
 ```
 
 **10. Delay-FR**
@@ -270,7 +270,8 @@ Here's the list of minimal experiment you can run to reproduce specific figures 
     ```
 14. **figures 10a, 10b, 10c**
     ```bash
-    TODO
+    grep -Ei ' (opt-clock) ' ~/task > ~/fig10_task
+    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig10_task
     ```
 15. **figures 11a, 11b, 11c**
     ```bash
