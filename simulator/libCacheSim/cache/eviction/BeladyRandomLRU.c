@@ -206,7 +206,7 @@ static void BeladyRandomLRU_evict(cache_t *cache, const request_t *req) {
   cache_evict_base(cache, obj_to_evict, true);
   BeladyRandomLRU_params_t *params = cache->eviction_params;
   params->total_eviction += 1;
-  snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f-fbee=%f", params->scaler,
+  snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "BeladyRandomLRU-%f-fbee=%f", params->scaler,
            (float)params->early_eviction / params->total_eviction);
 }
 
@@ -238,7 +238,7 @@ static bool can_evict(cache_t *cache, const request_t *req) {
   if (req->next_access_vtime == INT64_MAX) {
     params->total_eviction += 1;
     params->early_eviction += 1;
-    snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f-fbee=%f", params->scaler,
+    snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "BeladyRandomLRU-%f-fbee=%f", params->scaler,
              (float)params->early_eviction / params->total_eviction);
     return true;
   }
@@ -260,7 +260,7 @@ static bool can_evict(cache_t *cache, const request_t *req) {
   if (dist > threshold_product) {
     params->total_eviction += 1;
     params->early_eviction += 1;
-    snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "RandomBelady-%f-fbee=%f", params->scaler,
+    snprintf(cache->cache_name, CACHE_NAME_ARRAY_LEN, "BeladyRandomLRU-%f-fbee=%f", params->scaler,
              (float)params->early_eviction / params->total_eviction);
     return true;
   } else {
