@@ -268,15 +268,15 @@ Here's the list of minimal experiment you can run to reproduce specific figures 
     grep -Ei 'twoq' ~/task > ~/fig8cd_task
     cd distComp; python redisManager.py --task loadTask --taskfile ~/fig8cd_task
     ```
-13. **figures 9a, 9c**
+13. **figures 9a**
     ```bash
-    grep -Ei ' (beladyRandomLRU) ' ~/task > ~/fig9ac_task
-    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig9ac_task
+    grep -Ei ' (beladyRandomLRU) ' ~/task > ~/fig9a_task
+    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig9a_task
     ```
-13. **figures 9b**
+13. **figures 9b,9c**
     ```bash
-    grep -Ei ' (randomBelady) ' ~/task > ~/fig9b_task
-    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig9b_task
+    grep -Ei ' (randomBelady) ' ~/task > ~/fig9ab_task
+    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig9ab_task
     ```
 14. **figures 10a, 10b, 10c**
     ```bash
