@@ -195,13 +195,17 @@ WantedBy=multi-user.target
 ```
 
 #### Running the Experiments
+There's 2 kind of experiments on our paper.
+Miss ratio and promotions count experiment
+and Throughput experiments.
+
+##### Miss ratio and Promotions count Experiment
 we provided scripts for that in `scripts/generate_task.sh`.
 You might want to adjust the path on the scripts.
 It will output `task` file that contains all experiments.
 
 Running the `FIFO` and `LRU` experiments is necessary to generate all figures as it is used as the baseline.
 You can run the two experiment first by running
-
 ```
 grep -Ei ' (lru|fifo) ' ~/task > ~/fifo_lru_task
 cd distComp; python redisManager.py --task loadTask --taskfile ~/fifo_lru_task
@@ -298,6 +302,8 @@ Here's the list of minimal experiment you can run to reproduce specific figures 
     grep -Ei ' (age) ' ~/task > ~/fig13_task
     cd distComp; python redisManager.py --task loadTask --taskfile ~/fig13_task
     ```
+
+##### Throughput Experiments
 
 
 ### Analyzing Results
