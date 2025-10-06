@@ -205,8 +205,10 @@ static inline cache_obj_t *RandomK_select(cache_t *cache, const int k) {
  * @param req not used
  */
 static void RandomK_evict(cache_t *cache, const request_t *req) {
+  pthread_spin_lock(&cache->lock);
   cache_obj_t *obj_to_evict = RandomK_to_evict(cache, req);
   cache_evict_base(cache, obj_to_evict, true);
+  pthread_spin_unlock(&cache->lock);
 }
 
 /**
