@@ -161,7 +161,7 @@ Considering that we provide the simulation results on [Google Drive](https://dri
 #### Setup distComp
 We ran our experiments using [distComp](https://github.com/1a1a11a/distComp).
 Utilizing its capability in managing hundred-thousands of experiments across multiple nodes.
-Even if you're only using 1 nodes it's nice to have for monitoring purpose.
+Even if you're only using single node it's nice to have for monitoring purpose.
 
 1. Install dependencies
 ```
@@ -304,8 +304,12 @@ Here's the list of minimal experiment you can run to reproduce specific figures 
     ```
 
 ##### Throughput Experiments
-
-
+1.**figures 1a** (overall best param)
+2.**figures 2b** (prob all params)
+3.**figures 3b** (batch all params)
+4.**figures 4b** (delay all params)
+5.**figures 5b** (clock all params)
+6.**figures 6a** (random all params)
 ### Analyzing Results
 
 The `scripts/` directory contains Python scripts for analyzing the simulation results and generating the figures used in the paper.
