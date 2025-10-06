@@ -216,19 +216,16 @@ Here's the list of minimal experiment you can run to reproduce specific figures 
 We run scalability experiments on a single r650 node in CloudLab.
 Before starting, run the following scripts to disable Turbo Boost and hyper-threading to ensure stable and repeatable performance:
 ```
-bash
 bash disable_turbo.sh
 sudo bash disable_hyperthreading.sh off # requires admin privileges
 ```
 
 To restrict execution to a single NUMA domain, use lscpu to identify the CPUs that belong to the same NUMA node. Then use taskset to pin the program to those cores:
 ```
-bash
 taskset -c <cpu_list> ./program
 ```
 The script used to generate the scalability experiment tasks is:
 ```
-bash
 scripts/generate_scalability_task.sh
 ```
 
