@@ -5,6 +5,7 @@ set(sourceC
         RandomK.c
         LFU.c
         LFUDA.c
+
         ARC.c
         ARC_Delay.c
         ARC_LRU.c
@@ -72,6 +73,7 @@ set(sourceC
 
         FrozenHot.c
         RandomBelady.c
+        BeladyRandomLRU.c
         RandomLRU.c
 
 )
@@ -109,6 +111,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/belady")
 endif()
 
 set(sourceCPP
+        Opt_Clock.cpp
         cpp/LFU.cpp
         cpp/GDSF.cpp
         LHD/lhd.cpp

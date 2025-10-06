@@ -11,7 +11,7 @@ datasets_file=~/Lazy-Promotions/scripts/datasets.txt
 rm $task_out
 touch $task_out
 
-for p in age delayfr lru fifo clock random arc_prob arc_lru arc_delay arc_batch arc_fr twoq_prob twoq_lru twoq_delay twoq_batch twoq_fr; do
+for p in belady_random opt_clock age delayfr lru fifo clock random arc_prob arc_lru arc_delay arc_batch arc_fr twoq_prob twoq_lru twoq_delay twoq_batch twoq_fr; do
     mkdir -p $output_dir/$p
 done
 
@@ -47,6 +47,13 @@ while IFS= read -r path; do
     for p in 1 2 4 8 16 32 64 128; do
         echo "shell:$priority:$min_dram:1:cd $output_dir/random_lru && $simulator/cachesim $file oracleGeneral randomlru -e n-samples=$p 0.01 --ignore-obj-size 1" >> $task_out
     done
+    for p in 1 2 3 4 5 6 7 8 9 10 999999; do
+        echo "shell:$priority:$min_dram:1:cd $output_dir/random_belady && $simulator/cachesim $file oracleGeneral randomBelady -e scaler=$p 0.01 --ignore-obj-size 1" >> $task_out
+    done
+    for p in 1 2 3 4 5 6 7 8 9 10 999999; do
+        echo "shell:$priority:$min_dram:1:cd $output_dir/belady_random_lru && $simulator/cachesim $file oracleGeneral beladyRandomLRU -e scaler=$p 0.01 --ignore-obj-size 1" >> $task_out
+    done
+
     echo "shell:$priority:$min_dram:1:cd $output_dir/arc_prob && $simulator/cachesim $file oracleGeneral arc-prob 0.01 --ignore-obj-size 1" >> $task_out
     echo "shell:$priority:$min_dram:1:cd $output_dir/arc_lru && $simulator/cachesim $file oracleGeneral arc-lru 0.01 --ignore-obj-size 1" >> $task_out
     echo "shell:$priority:$min_dram:1:cd $output_dir/arc_delay && $simulator/cachesim $file oracleGeneral arc-delay 0.01 --ignore-obj-size 1" >> $task_out
@@ -60,6 +67,8 @@ while IFS= read -r path; do
 
     echo "shell:$priority:$min_dram:1:cd $output_dir/fifo && $simulator/cachesim $file oracleGeneral fifo 0.01 --ignore-obj-size 1" >> $task_out
     echo "shell:$priority:$min_dram:1:cd $output_dir/lru && $simulator/cachesim $file oracleGeneral lru 0.01 --ignore-obj-size 1" >> $task_out
+    echo "shell:$priority:$min_dram:1:cd $output_dir/opt_clock && $simulator/cachesim $file oracleGeneral opt-clock 0.01 -e iter=5 --ignore-obj-size 1" >> $task_out
+
     for p in 0.01 0.05 0.1 0.2 0.4 0.5; do
         echo "shell:$priority:$min_dram:1:cd $output_dir/delayfr && $simulator/cachesim $file oracleGeneral delayfr -e delay-ratio=$p 0.01 --ignore-obj-size 1" >> $task_out
     done

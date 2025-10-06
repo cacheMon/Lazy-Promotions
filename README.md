@@ -39,10 +39,18 @@ This script supports Ubuntu, CentOS, and macOS.
 After installing the dependencies, you can build the simulator:
 
 ```bash
-mkdir _build
+mkdir -p _build
 cd _build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make [-j]
+```
+
+On stricter compiler you might need to run
+```bash
+mkdir -p _build
+cd _build
+cmake -DCMAKE_C_FLAGS="-Wno-implicit-int" -DCMAKE_CXX_FLAGS="-std=c++17 -include cstdint -Wno-template-body -fpermissive" ..
+make -j
 ```
 
 The simulator executable `cachesim` will be available in the `simulator/_build/bin/` directory.
@@ -113,25 +121,29 @@ Here are the basic commands for each algorithm discussed in the paper:
 
 **7. RandomLRU**
 ```bash
-./_build/bin/cachesim $file oracleGeneral randomK -e n-samples=5 0.01 --ignore-obj-size 1
+./_build/bin/cachesim $file oracleGeneral randomLRU -e n-samples=5 0.01 --ignore-obj-size 1
 ```
 
-**8. Belady-FR**
+**8. Belady-Random**
 ```bash
-./_build/bin/cachesim $file oracleGeneral beladyclock -e scaler=0.5 0.01 --ignore-obj-size 1
+./_build/bin/cachesim $file oracleGeneral randomBelady -e scaler=5 0.01 --ignore-obj-size 1
 ```
-
-**9. Offline-FR**
+**9. Belady-RandomLRU**
 ```bash
-./_build/bin/cachesim $file oracleGeneral offlineFR -e scaler=0.5 0.01 --ignore-obj-size 1
+./_build/bin/cachesim $file oracleGeneral beladyRandomLRU -e scaler=5 0.01 --ignore-obj-size 1
 ```
 
-**10. Delay-FR**
+**10. Offline-FR**
+```bash
+./_build/bin/cachesim $file oracleGeneral opt-clock -e iter=5 0.01 --ignore-obj-size 1
+```
+
+**11. Delay-FR**
 ```bash
 ./_build/bin/cachesim $file oracleGeneral delayfr -e delay-ratio=0.05 0.01 --ignore-obj-size 1
 ```
 
-**11. AGE**
+**12. AGE**
 ```bash
 ./_build/bin/cachesim $file oracleGeneral age -e scaler=0.4 0.01 --ignore-obj-size 1
 ```
@@ -144,7 +156,7 @@ We recommend running this experiments on hardware with at least 256 GB of RAM. I
 #### Experiment Size and Duration
 Running all the experiments included in the paper would
 consume a lot of spaces to just store the traces and take at least a day using 15 nodes (64 core, 376 GB RAM).
-Considering that we provide the simulation results on [Google Drive](TODO).
+Considering that we provide the simulation results on [Google Drive](https://drive.google.com/file/d/1GNkvus1LQfOs5n65rEO3xVyMfOoZGCqp/view?usp=sharing).
 
 #### Setup distComp
 We ran our experiments using [distComp](https://github.com/1a1a11a/distComp).
@@ -183,13 +195,17 @@ WantedBy=multi-user.target
 ```
 
 #### Running the Experiments
+There's 2 kind of experiments on our paper.
+Miss ratio and promotions count experiment
+and Throughput experiments.
+
+##### Miss ratio and Promotions count Experiment
 we provided scripts for that in `scripts/generate_task.sh`.
 You might want to adjust the path on the scripts.
 It will output `task` file that contains all experiments.
 
 Running the `FIFO` and `LRU` experiments is necessary to generate all figures as it is used as the baseline.
 You can run the two experiment first by running
-
 ```
 grep -Ei ' (lru|fifo) ' ~/task > ~/fifo_lru_task
 cd distComp; python redisManager.py --task loadTask --taskfile ~/fifo_lru_task
@@ -256,13 +272,20 @@ Here's the list of minimal experiment you can run to reproduce specific figures 
     grep -Ei 'twoq' ~/task > ~/fig8cd_task
     cd distComp; python redisManager.py --task loadTask --taskfile ~/fig8cd_task
     ```
-13. **figures 9a, 9b, 9c**
+13. **figures 9a**
     ```bash
-    TODO
+    grep -Ei ' (beladyRandomLRU) ' ~/task > ~/fig9a_task
+    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig9a_task
+    ```
+13. **figures 9b,9c**
+    ```bash
+    grep -Ei ' (randomBelady) ' ~/task > ~/fig9ab_task
+    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig9ab_task
     ```
 14. **figures 10a, 10b, 10c**
     ```bash
-    TODO
+    grep -Ei ' (opt-clock) ' ~/task > ~/fig10_task
+    cd distComp; python redisManager.py --task loadTask --taskfile ~/fig10_task
     ```
 15. **figures 11a, 11b, 11c**
     ```bash
@@ -279,6 +302,8 @@ Here's the list of minimal experiment you can run to reproduce specific figures 
     grep -Ei ' (age) ' ~/task > ~/fig13_task
     cd distComp; python redisManager.py --task loadTask --taskfile ~/fig13_task
     ```
+
+##### Throughput Experiments
 
 
 ### Analyzing Results
