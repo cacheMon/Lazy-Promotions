@@ -5,7 +5,23 @@ import numpy as np
 
 
 def figure1a(df: pd.DataFrame):
-    print("figure1a")
+    data = df.query(
+        '(Algorithm == "Delay" and Scale == 0.2) or'
+        '(Algorithm == "Prob" and Scale == 0.5) or'
+        '(Algorithm == "Batch" and Scale == 0.5) or'
+        '(Algorithm == "FR" and Bit == 1) or'
+    )
+    plt_wrapper.plt_scatter(
+        data,
+        "Relative Miss Ratio [LRU]",
+        "Relative Throughput [LRU]",
+        x_label="Miss ratio relative to LRU",
+        y_label="Throughput relative to LRU",
+        hue="algorithm",
+        markers=style.markers,
+        palette=style.palette,
+        output_pdf="figure1a.pdf",
+    )
     pass
 
 
@@ -65,6 +81,23 @@ def figure2a(df: pd.DataFrame):
     )
 
 
+def figure2b(df: pd.DataFrame):
+    data = df.query('Algorithm == "Prob"')
+    plt_wrapper.plt_box(
+        data,
+        y="Relative Throughput [LRU]",
+        y_label="Throughput relative to LRU",
+        x="Scale",
+        x_label="Prob",
+        x_size=12,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure2b.pdf",
+        marker_size=11,
+        invert=True,
+    )
+
+
 def figure2c(df: pd.DataFrame):
     data = df.query('Algorithm == "Prob"')
     plt_wrapper.plt_box(
@@ -99,6 +132,22 @@ def figure3a(df: pd.DataFrame):
     )
 
 
+def figure3b(df: pd.DataFrame):
+    data = df.query('Algorithm == "Batch"')
+    plt_wrapper.plt_box(
+        data,
+        y="Relative Throughput [LRU]",
+        y_label="Throughput relative to LRU",
+        x="Scale",
+        x_label="Batch size",
+        x_size=12,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure3b.pdf",
+        marker_size=11,
+    )
+
+
 def figure3c(df: pd.DataFrame):
     data = df.query('Algorithm == "Batch"')
     plt_wrapper.plt_box(
@@ -128,6 +177,22 @@ def figure4a(df: pd.DataFrame):
         hue="Algorithm",
         palette=["lightblue"],
         output_pdf="figures/figure4a.pdf",
+        marker_size=11,
+    )
+
+
+def figure4b(df: pd.DataFrame):
+    data = df.query('Algorithm == "Delay"')
+    plt_wrapper.plt_box(
+        data,
+        y="Relative Throughput [LRU]",
+        y_label="Throughput relative to LRU",
+        x="Scale",
+        x_label="Delay",
+        x_size=12,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure4b.pdf",
         marker_size=11,
     )
 
@@ -165,6 +230,22 @@ def figure5a(df: pd.DataFrame):
     )
 
 
+def figure5b(df: pd.DataFrame):
+    data = df.query('Algorithm == "FR"')
+    plt_wrapper.plt_box(
+        data,
+        y="Relative Throughput [LRU]",
+        y_label="Throughput relative to LRU",
+        x="Bit",
+        x_label="# Frequency bits",
+        x_size=12,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure5b.pdf",
+        marker_size=11,
+    )
+
+
 def figure5c(df: pd.DataFrame):
     data = df.query('Algorithm == "FR"')
     plt_wrapper.plt_box(
@@ -177,6 +258,22 @@ def figure5c(df: pd.DataFrame):
         hue="Algorithm",
         palette=["lightblue"],
         output_pdf="figures/figure5c.pdf",
+        marker_size=11,
+    )
+
+
+def figure6a(df: pd.DataFrame):
+    data = df.query('Algorithm == "Random"')
+    plt_wrapper.plt_box(
+        data,
+        y="Relative Throughput [LRU]",
+        y_label="Throughput relative to LRU",
+        x="Scale",
+        x_label="Sample size",
+        x_size=12,
+        hue="Algorithm",
+        palette=["lightblue"],
+        output_pdf="figures/figure6a.pdf",
         marker_size=11,
     )
 
