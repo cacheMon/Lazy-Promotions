@@ -212,6 +212,15 @@ cd distComp; python redisManager.py --task loadTask --taskfile ~/fifo_lru_task
 ```
 Here's the list of minimal experiment you can run to reproduce specific figures on our paper.
 
+##### Scalability experiments
+We run scalability experiments on the r650 nodes in CloudLab.
+Before starting, run the following scripts to disable Turbo Boost and hyper-threading to ensure stable and repeatable performance:
+```
+bash disable_turbo.sh
+sudo bash disable_hyperthreading.sh off # requires admin privileges
+```
+The script that is used to generate the tasks is `scripts/generate_scalability_task.sh`.
+
 1. **figures 1b**
    ```bash
    grep -Ei ' (lru-delay|lru-prob|batch|clock|delayfr|age) ' ~/task > ~/fig1_task
