@@ -85,6 +85,30 @@ def ProcessData(df: pd.DataFrame):
 
 script_dir = Path(__file__).resolve().parent
 df = pd.read_feather(script_dir / "data/data.feather")
-processed = ProcessData(df)
+
+processed = ProcessData(
+    df.query("~Trace.str.contains('zipf', case=False)", engine="python")
+)
 processed.to_csv(script_dir / "data/processed.csv")
 processed.to_feather(script_dir / "data/processed.feather")
+
+df_throughput = df.query("Trace.str.contains('zipf', case=False)", engine="python")
+if not df_throughput.empty:
+    df_throughput = df.loc[:, ["Algorithm", "Scale", "Bit", "Throughput"]]
+    df_throughput = (
+        df.groupby(["Algorithm", "Scale", "Bit"]).mean(numeric_only=True).reset_index()
+    )
+    df_mean = (
+        df.groupby(["Algorithm", "Scale", "Bit"]).mean(numeric_only=True).reset_index()
+    )
+    overall_throughput = pd.merge(
+        df_throughput,
+        df_mean,
+        left_on=["Algorithm", "Scale", "Bit"],
+        right_on=["Algorithm", "Scale", "Bit"],
+        how="inner",
+    )
+    overall_throughput.to_csv(script_dir / "data/throughput.csv")
+    overall_throughput.to_feather(script_dir / "data/throughput.feather")
+else:
+    print("Throughput data is not available")
