@@ -89,6 +89,7 @@ def parse_line(line: str, filename: str, cache_size: float):
             "Request": int(d["requests"]),
             "Miss Ratio": float(d["miss_ratio"]),
             "Reinserted": int(d["promotion"]),
+            "Throughput": float(d["throughput"]),
             "Trace": filename[filename.rfind("/") + 1 :],
             "Trace Path": filename,
             "Cache Size": 0.01,
