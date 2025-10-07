@@ -212,22 +212,6 @@ cd distComp; python redisManager.py --task loadTask --taskfile ~/fifo_lru_task
 ```
 Here's the list of minimal experiment you can run to reproduce specific figures on our paper.
 
-##### Scalability experiments
-We run scalability experiments on a single r650 node in CloudLab.
-Before starting, run the following scripts to disable Turbo Boost and hyper-threading to ensure stable and repeatable performance:
-```
-bash disable_turbo.sh
-sudo bash disable_hyperthreading.sh off # requires admin privileges
-```
-
-To restrict execution to a single NUMA domain, use lscpu to identify the CPUs that belong to the same NUMA node. Then use taskset to pin the program to those cores:
-```
-taskset -c <cpu_list> ./program
-```
-The script used to generate the scalability experiment tasks is:
-```
-scripts/generate_scalability_task.sh
-```
 
 1. **figures 1b**
    ```bash
@@ -320,12 +304,32 @@ scripts/generate_scalability_task.sh
     cd distComp; python redisManager.py --task loadTask --taskfile ~/fig13_task
     ```
 
-##### Throughput Experiments
+##### Scalability experiments
+We run scalability experiments on a single r650 node in CloudLab.
+Before starting, run the following scripts to disable Turbo Boost and hyper-threading to ensure stable and repeatable performance:
+```
+bash disable_turbo.sh
+sudo bash disable_hyperthreading.sh off # requires admin privileges
+```
+
+To restrict execution to a single NUMA domain, use lscpu to identify the CPUs that belong to the same NUMA node. Then use taskset to pin the program to those cores:
+```
+taskset -c <cpu_list> ./program
+```
+The script used to generate the scalability experiment tasks is:
+```
+scripts/generate_scalability_task.sh
+```
 1.**figures 1a** (overall best param)
+
 2.**figures 2b** (prob all params)
+
 3.**figures 3b** (batch all params)
+
 4.**figures 4b** (delay all params)
+
 5.**figures 5b** (clock all params)
+
 6.**figures 6a** (random all params)
 ### Analyzing Results
 
