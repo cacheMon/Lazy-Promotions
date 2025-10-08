@@ -156,7 +156,7 @@ We recommend running this experiments on hardware with at least 256 GB of RAM. I
 #### Experiment Size and Duration
 Running all the experiments included in the paper would
 consume a lot of spaces to just store the traces and take at least a day using 15 nodes (64 core, 376 GB RAM).
-Considering that we provide the simulation results on [Google Drive](https://drive.google.com/file/d/1GNkvus1LQfOs5n65rEO3xVyMfOoZGCqp/view?usp=sharing).
+Considering that, we provide the simulation results on `scripts/data/` and [Google Drive](https://drive.google.com/file/d/1GNkvus1LQfOs5n65rEO3xVyMfOoZGCqp/view?usp=sharing).
 
 #### Setup distComp
 We ran our experiments using [distComp](https://github.com/1a1a11a/distComp).
@@ -171,7 +171,7 @@ or
 ```
 sudo apt install python3-redis python3-psutil
 ```
-Commands above need to be run on all nodes. You can utilize `pssh` or `clush` to do that.
+Above commands need to be run on all nodes. You can utilize `pssh` or `clush` to do that.
 For the manager nodes. You need to set up redis-server with `redis.sh` available on the [distComp](https://github.com/1a1a11a/distComp) repository.
 
 2. We provide systemd service for distComp so that you can start/stop/restart easily.
