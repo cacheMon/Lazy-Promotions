@@ -9,9 +9,9 @@ from pathlib import Path
 general_pattern = re.compile(
     r".*?\s+(?P<algo>[A-Za-z0-9_]+)"
     r"(?:-(?P<config>[A-Za-z0-9_.= -]+))?"
-    r"\s+cache size\s+(?P<cache_size>\d+),\s+"
+    r"\s+cache size\s+(?P<cache_size>[A-Za-z0-9_.-]+),\s+"
     r"(?P<requests>\d+)\s+req,\s+miss ratio\s+(?P<miss_ratio>\d+(?:\.\d+)?),\s+"
-    r"throughput\s+(?P<throughput>\d+(?:\.\d+)?)\s+MQPS,\s+promotion\s+(?P<promotion>\d+)"
+    r"(?:,\s+promotion\s+(?P<promotion>\d+))?"
 )
 
 
@@ -57,6 +57,7 @@ parse_specific_params = {
     "OptClock": parse_dclock,
     "RandomBelady": parse_belady,
     "BeladyRandomLRU": parse_belady,
+    "DelayAGE": lambda a, b: None,
 }
 
 algorithms = {
@@ -75,6 +76,7 @@ algorithms = {
     "OptClock": "Offline-FR",
     "RandomBelady": "Belady-Random",
     "BeladyRandomLRU": "Belady-RandomLRU",
+    "DelayAGE": "D-AGE",
 }
 
 
@@ -88,8 +90,7 @@ def parse_line(line: str, filename: str, cache_size: float):
             "Real Cache Size": int(d["cache_size"]),
             "Request": int(d["requests"]),
             "Miss Ratio": float(d["miss_ratio"]),
-            "Reinserted": int(d["promotion"]),
-            "Throughput": float(d["throughput"]),
+            "Reinserted": int(d["promotion"]) if d["promotion"] is not None else 1,
             "Trace": filename[filename.rfind("/") + 1 :],
             "Trace Path": filename,
             "Cache Size": 0.01,
@@ -126,6 +127,9 @@ def ReadData():
                 if key not in datasets:
                     continue
                 row = parse_line(line, datasets[key], 0.1)
+                if "dummy.txt" in line:
+                    print("line: ", line)
+                    print("rowL ", row)
                 if row:
                     rows.append(row)
     return pd.DataFrame(rows)
