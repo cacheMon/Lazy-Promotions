@@ -19,7 +19,7 @@ run_simulation()
     fi
 }
 
-num_iteration=4
+num_iteration=5
 output_dir=~/results/
 mkdir -p $output_dir
 
@@ -48,7 +48,7 @@ for iteration in $(seq 1 $num_iteration); do
     algo="lru-prob"
     mkdir -p $output_dir/$algo
     cache_sizes=("88000" "68000" "48000" "20000")
-    for p in 0.9 0.8 0.6 0.4 0.2 0.1 0.05 0.01; do
+    for p in 0.9 0.8 0.6 0.5 0.4 0.2 0.1 0.05 0.01; do
         for size in "${cache_sizes[@]}"; do
             for threads in "${threads_list[@]}"; do
                 run_simulation $algo "prob" $p $size $threads >> $output_dir/$algo/result_${iteration}.txt
