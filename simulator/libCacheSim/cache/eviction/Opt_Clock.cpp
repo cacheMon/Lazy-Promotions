@@ -65,6 +65,7 @@ struct OptClock_params_t {
   int64_t vtime;
 
   int64_t iteration;
+  bool active;
 
   std::unordered_map<obj_id_t, lifetime_md> lifetime_mds = std::unordered_map<obj_id_t, lifetime_md>();
   std::unordered_map<obj_id_t, std::unordered_set<uint64_t>> bad_promotions =
@@ -150,6 +151,13 @@ static cache_obj_t *OptClock_to_evict(cache_t *cache, const request_t *req) {
   }
 
   return obj_to_evict;
+}
+
+static void OptClock_force_evict(cache_t *cache) {
+  OptClock_params_t *params = (OptClock_params_t *)cache->eviction_params;
+  cache_obj_t *obj_to_evict = params->q_tail;
+  remove_obj_from_list(&params->q_head, &params->q_tail, obj_to_evict);
+  cache_evict_base(cache, obj_to_evict, true);
 }
 
 static void OptClock_evict(cache_t *cache, const request_t *req) {
@@ -246,9 +254,12 @@ static void OptClock_reset(cache_t *cache) {
   OptClock_params_t *params = static_cast<OptClock_params_t *>(cache->eviction_params);
   std::cout << "iteration: " << cache->version_num << ", size: " << params->bad_promotions.size() << "\n";
 
-  request_t tmp;
+  // request_t tmp;
+  // while (cache->n_obj > 0) {
+  //   cache->evict(cache, &tmp);
+  // }
   while (cache->n_obj > 0) {
-    cache->evict(cache, &tmp);
+    OptClock_force_evict(cache);
   }
 
   cache->n_req = 0;
