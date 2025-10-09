@@ -320,17 +320,17 @@ The script used to generate the scalability experiment tasks is:
 ```
 scripts/generate_scalability_task.sh
 ```
-1.**figures 1a** (overall best param)
-
-2.**figures 2b** (prob all params)
-
-3.**figures 3b** (batch all params)
-
-4.**figures 4b** (delay all params)
-
-5.**figures 5b** (clock all params)
-
-6.**figures 6a** (random all params)
+<!-- 1.**figures 1a** (overall best param) -->
+<!---->
+<!-- 2.**figures 2b** (prob all params) -->
+<!---->
+<!-- 3.**figures 3b** (batch all params) -->
+<!---->
+<!-- 4.**figures 4b** (delay all params) -->
+<!---->
+<!-- 5.**figures 5b** (clock all params) -->
+<!---->
+<!-- 6.**figures 6a** (random all params) -->
 ### Analyzing Results
 
 The `scripts/` directory contains Python scripts for analyzing the simulation results and generating the figures used in the paper.
@@ -350,7 +350,10 @@ pip install -r requirements.txt
 #### Parse and Process Results
 To parse the results you need to run `parse_data.py` it took exactly
 one argument `result_directory` and output `scripts/data/data.feather,data.csv`.
-Next, run `process_data` to get the metrics for our figures. It outputs `scripts/data/processed.feather,processed.csv`
+If scalability results is available you need to run `parse_scalability.py` it take `scalability_result_directory` as argument.
+You need to separate scalability and miss ratio result as they have distinct format.
+Next, run `process_data.py` to get the metrics for our figures. It outputs `scripts/data/processed.feather,processed.csv`
+and `scripts/data/processed_scalability.feather,processed_scalability.csv` if scalability result available
 
 Note: only feather file is necessary, csv file only for quick and easy observation of the raw data.
 

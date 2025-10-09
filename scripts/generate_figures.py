@@ -4,12 +4,9 @@ import style
 import numpy as np
 
 
-def figure1a(df: pd.DataFrame):
-    data = df.query(
-        '(Algorithm == "Delay" and Scale == 0.2) or'
-        '(Algorithm == "Prob" and Scale == 0.5) or'
-        '(Algorithm == "Batch" and Scale == 0.5) or'
-        '(Algorithm == "FR" and Bit == 1) or'
+def figure1a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = scalability.query(
+        'Algorithm in ["Batch","Prob","Delay","FR"] and Thread == 16'
     )
     plt_wrapper.plt_scatter(
         data,
@@ -17,16 +14,16 @@ def figure1a(df: pd.DataFrame):
         "Relative Throughput [LRU]",
         x_label="Miss ratio relative to LRU",
         y_label="Throughput relative to LRU",
-        hue="algorithm",
+        hue="Algorithm",
         markers=style.markers,
         palette=style.palette,
-        output_pdf="figure1a.pdf",
+        output_pdf="figures/figure1a.pdf",
     )
     pass
 
 
-def figure1b(df: pd.DataFrame):
-    data = df.query(
+def figure1b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query(
         '(Algorithm == "Delay" and Scale == 0.2) or'
         '(Algorithm == "Prob" and Scale == 0.5) or'
         '(Algorithm == "Batch" and Scale == 0.5) or'
@@ -63,8 +60,8 @@ def figure1b(df: pd.DataFrame):
     )
 
 
-def figure2a(df: pd.DataFrame):
-    data = df.query('Algorithm == "Prob"')
+def figure2a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Prob"')
     plt_wrapper.plt_box(
         data,
         y="Relative Promotion [LRU]",
@@ -81,8 +78,8 @@ def figure2a(df: pd.DataFrame):
     )
 
 
-def figure2b(df: pd.DataFrame):
-    data = df.query('Algorithm == "Prob"')
+def figure2b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = scalability.query('Algorithm == "Prob" and Thread == 16')
     plt_wrapper.plt_box(
         data,
         y="Relative Throughput [LRU]",
@@ -98,8 +95,8 @@ def figure2b(df: pd.DataFrame):
     )
 
 
-def figure2c(df: pd.DataFrame):
-    data = df.query('Algorithm == "Prob"')
+def figure2c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Prob"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [LRU]",
@@ -115,8 +112,8 @@ def figure2c(df: pd.DataFrame):
     )
 
 
-def figure3a(df: pd.DataFrame):
-    data = df.query('Algorithm == "Batch"')
+def figure3a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Batch"')
     plt_wrapper.plt_box(
         data,
         y="Relative Promotion [LRU]",
@@ -132,8 +129,8 @@ def figure3a(df: pd.DataFrame):
     )
 
 
-def figure3b(df: pd.DataFrame):
-    data = df.query('Algorithm == "Batch"')
+def figure3b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = scalability.query('Algorithm == "Batch" and Thread == 16')
     plt_wrapper.plt_box(
         data,
         y="Relative Throughput [LRU]",
@@ -148,8 +145,8 @@ def figure3b(df: pd.DataFrame):
     )
 
 
-def figure3c(df: pd.DataFrame):
-    data = df.query('Algorithm == "Batch"')
+def figure3c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Batch"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [LRU]",
@@ -164,8 +161,8 @@ def figure3c(df: pd.DataFrame):
     )
 
 
-def figure4a(df: pd.DataFrame):
-    data = df.query('Algorithm == "Delay"')
+def figure4a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Delay"')
     plt_wrapper.plt_box(
         data,
         y="Relative Promotion [LRU]",
@@ -181,8 +178,8 @@ def figure4a(df: pd.DataFrame):
     )
 
 
-def figure4b(df: pd.DataFrame):
-    data = df.query('Algorithm == "Delay"')
+def figure4b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = scalability.query('Algorithm == "Delay" and Thread == 16')
     plt_wrapper.plt_box(
         data,
         y="Relative Throughput [LRU]",
@@ -197,8 +194,8 @@ def figure4b(df: pd.DataFrame):
     )
 
 
-def figure4c(df: pd.DataFrame):
-    data = df.query('Algorithm == "Delay"')
+def figure4c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Delay"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [LRU]",
@@ -213,8 +210,8 @@ def figure4c(df: pd.DataFrame):
     )
 
 
-def figure5a(df: pd.DataFrame):
-    data = df.query('Algorithm == "FR"')
+def figure5a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "FR"')
     plt_wrapper.plt_box(
         data,
         y="Relative Promotion [LRU]",
@@ -230,13 +227,13 @@ def figure5a(df: pd.DataFrame):
     )
 
 
-def figure5b(df: pd.DataFrame):
-    data = df.query('Algorithm == "FR"')
+def figure5b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = scalability.query('Algorithm == "FR" and Thread == 16')
     plt_wrapper.plt_box(
         data,
         y="Relative Throughput [LRU]",
         y_label="Throughput relative to LRU",
-        x="Bit",
+        x="Scale",
         x_label="# Frequency bits",
         x_size=12,
         hue="Algorithm",
@@ -246,8 +243,8 @@ def figure5b(df: pd.DataFrame):
     )
 
 
-def figure5c(df: pd.DataFrame):
-    data = df.query('Algorithm == "FR"')
+def figure5c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "FR"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [LRU]",
@@ -262,8 +259,8 @@ def figure5c(df: pd.DataFrame):
     )
 
 
-def figure6a(df: pd.DataFrame):
-    data = df.query('Algorithm == "Random"')
+def figure6a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = scalability.query('Algorithm == "Random" and Thread == 16')
     plt_wrapper.plt_box(
         data,
         y="Relative Throughput [LRU]",
@@ -278,8 +275,8 @@ def figure6a(df: pd.DataFrame):
     )
 
 
-def figure6b(df: pd.DataFrame):
-    data = df.query('Algorithm == "Random"')
+def figure6b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Random"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [LRU]",
@@ -294,8 +291,8 @@ def figure6b(df: pd.DataFrame):
     )
 
 
-def figure7a(df: pd.DataFrame):
-    data = df.query('Algorithm == "Prob"')
+def figure7a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Prob"')
     plt_wrapper.plt_box(
         data,
         y="Promotion Efficiency",
@@ -312,8 +309,8 @@ def figure7a(df: pd.DataFrame):
     )
 
 
-def figure7b(df: pd.DataFrame):
-    data = df.query('Algorithm == "Batch"')
+def figure7b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Batch"')
     plt_wrapper.plt_box(
         data,
         y="Promotion Efficiency",
@@ -329,8 +326,8 @@ def figure7b(df: pd.DataFrame):
     )
 
 
-def figure7c(df: pd.DataFrame):
-    data = df.query('Algorithm == "Delay"')
+def figure7c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Delay"')
     plt_wrapper.plt_box(
         data,
         y="Promotion Efficiency",
@@ -346,8 +343,8 @@ def figure7c(df: pd.DataFrame):
     )
 
 
-def figure7d(df: pd.DataFrame):
-    data = df.query('Algorithm == "FR"')
+def figure7d(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "FR"')
     plt_wrapper.plt_box(
         data,
         y="Promotion Efficiency",
@@ -363,8 +360,8 @@ def figure7d(df: pd.DataFrame):
     )
 
 
-def figure8a(df: pd.DataFrame):
-    data = df.query('Algorithm == "ARC"')
+def figure8a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "ARC"')
     plt_wrapper.plt_box(
         data,
         y="Relative Promotion [Adv]",
@@ -381,8 +378,8 @@ def figure8a(df: pd.DataFrame):
     )
 
 
-def figure8b(df: pd.DataFrame):
-    data = df.query('Algorithm == "ARC"')
+def figure8b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "ARC"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [Adv]",
@@ -399,8 +396,8 @@ def figure8b(df: pd.DataFrame):
     )
 
 
-def figure8c(df: pd.DataFrame):
-    data = df.query('Algorithm == "TwoQ"')
+def figure8c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "TwoQ"')
     plt_wrapper.plt_box(
         data,
         y="Relative Promotion [Adv]",
@@ -417,8 +414,8 @@ def figure8c(df: pd.DataFrame):
     )
 
 
-def figure8d(df: pd.DataFrame):
-    data = df.query('Algorithm == "TwoQ"')
+def figure8d(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "TwoQ"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [Adv]",
@@ -435,8 +432,8 @@ def figure8d(df: pd.DataFrame):
     )
 
 
-def figure9a(df: pd.DataFrame):
-    data = df.query('Algorithm == "Belady-RandomLRU"')
+def figure9a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Belady-RandomLRU"')
     data.loc[data["Scale"] > 10, "Scale"] = np.inf
 
     def format_scale(v):
@@ -460,8 +457,8 @@ def figure9a(df: pd.DataFrame):
     )
 
 
-def figure9b(df: pd.DataFrame):
-    data = df.query('Algorithm == "Belady-Random"')
+def figure9b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Belady-Random"')
     data.loc[data["Scale"] > 10, "Scale"] = np.inf
 
     def format_scale(v):
@@ -485,8 +482,8 @@ def figure9b(df: pd.DataFrame):
     )
 
 
-def figure9c(df: pd.DataFrame):
-    data = df.query('Algorithm == "Belady-Random"')
+def figure9c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Belady-Random"')
     data.loc[data["Scale"] > 10, "Scale"] = np.inf
 
     def format_scale(v):
@@ -509,8 +506,8 @@ def figure9c(df: pd.DataFrame):
     )
 
 
-def figure10a(df: pd.DataFrame):
-    data = df.query('Algorithm == "Offline-FR"')
+def figure10a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Offline-FR"')
     plt_wrapper.plt_box(
         data,
         y="Relative Promotion [LRU]",
@@ -526,8 +523,8 @@ def figure10a(df: pd.DataFrame):
     )
 
 
-def figure10b(df: pd.DataFrame):
-    data = df.query('Algorithm == "Offline-FR"')
+def figure10b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Offline-FR"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [LRU]",
@@ -543,8 +540,8 @@ def figure10b(df: pd.DataFrame):
     )
 
 
-def figure10c(df: pd.DataFrame):
-    data = df.query('Algorithm == "Offline-FR"')
+def figure10c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "Offline-FR"')
     plt_wrapper.plt_box(
         data,
         y="Promotion Efficiency",
@@ -560,8 +557,8 @@ def figure10c(df: pd.DataFrame):
     )
 
 
-def figure11a(df: pd.DataFrame):
-    data = df.query(
+def figure11a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query(
         '(Algorithm == "Delay" and Scale == 0.2) or'
         '(Algorithm == "Prob" and Scale == 0.4) or'
         '(Algorithm == "Batch" and Scale == 0.5) or'
@@ -586,8 +583,8 @@ def figure11a(df: pd.DataFrame):
     )
 
 
-def figure11b(df: pd.DataFrame):
-    data = df.query(
+def figure11b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query(
         '(Algorithm == "Delay" and Scale == 0.2) or'
         '(Algorithm == "Prob" and Scale == 0.4) or'
         '(Algorithm == "Batch" and Scale == 0.5) or'
@@ -612,8 +609,8 @@ def figure11b(df: pd.DataFrame):
     )
 
 
-def figure11c(df: pd.DataFrame):
-    data = df.query(
+def figure11c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query(
         '(Algorithm == "Delay" and Scale == 0.2) or'
         '(Algorithm == "Prob" and Scale == 0.4) or'
         '(Algorithm == "Batch" and Scale == 0.5) or'
@@ -638,8 +635,8 @@ def figure11c(df: pd.DataFrame):
     )
 
 
-def figure12a(df: pd.DataFrame):
-    data = df.query('Algorithm == "D-FR"')
+def figure12a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "D-FR"')
     plt_wrapper.plt_box(
         data,
         y="Relative Promotion [LRU]",
@@ -655,8 +652,8 @@ def figure12a(df: pd.DataFrame):
     )
 
 
-def figure12b(df: pd.DataFrame):
-    data = df.query('Algorithm == "D-FR"')
+def figure12b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "D-FR"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [LRU]",
@@ -671,8 +668,8 @@ def figure12b(df: pd.DataFrame):
     )
 
 
-def figure12c(df: pd.DataFrame):
-    data = df.query('Algorithm == "D-FR"')
+def figure12c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "D-FR"')
     plt_wrapper.plt_box(
         data,
         y="Promotion Efficiency",
@@ -687,8 +684,8 @@ def figure12c(df: pd.DataFrame):
     )
 
 
-def figure13a(df: pd.DataFrame):
-    data = df.query('Algorithm == "AGE"')
+def figure13a(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "AGE"')
     plt_wrapper.plt_box(
         data,
         y="Relative Promotion [LRU]",
@@ -704,8 +701,8 @@ def figure13a(df: pd.DataFrame):
     )
 
 
-def figure13b(df: pd.DataFrame):
-    data = df.query('Algorithm == "AGE"')
+def figure13b(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "AGE"')
     plt_wrapper.plt_box(
         data,
         y="Relative Miss Ratio [LRU]",
@@ -720,8 +717,8 @@ def figure13b(df: pd.DataFrame):
     )
 
 
-def figure13c(df: pd.DataFrame):
-    data = df.query('Algorithm == "AGE"')
+def figure13c(general: pd.DataFrame, scalability: pd.DataFrame):
+    data = general.query('Algorithm == "AGE"')
     plt_wrapper.plt_box(
         data,
         y="Promotion Efficiency",
@@ -744,10 +741,13 @@ if __name__ == "__main__":
         raise ValueError("Missing required argument: figures to generate")
 
     os.makedirs("figures", exist_ok=True)
-    df = pd.read_feather("./data/processed.feather")
+    general = pd.read_feather("./data/processed.feather")
+    scalability = None
+    if os.path.exists("./data/processed_scalability.feather"):
+        scalability = pd.read_feather("./data/processed_scalability.feather")
 
     funcs = sys.argv[1:]
     for func in funcs:
         if func not in globals():
             raise ValueError(f"{func} is not available")
-        globals()[func](df)
+        globals()[func](general, scalability)

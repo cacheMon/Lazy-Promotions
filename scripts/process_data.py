@@ -86,29 +86,49 @@ def ProcessData(df: pd.DataFrame):
 script_dir = Path(__file__).resolve().parent
 df = pd.read_feather(script_dir / "data/data.feather")
 
-processed = ProcessData(
-    df.query("~Trace.str.contains('zipf', case=False)", engine="python")
-)
+processed = ProcessData(df)
 processed.to_csv(script_dir / "data/processed.csv")
 processed.to_feather(script_dir / "data/processed.feather")
 
-df_throughput = df.query("Trace.str.contains('zipf', case=False)", engine="python")
+processed["Scale"] = processed["Scale"].fillna(processed["Bit"])
+
+df_throughput = pd.read_feather(script_dir / "data/scalability.feather")
 if not df_throughput.empty:
-    df_throughput = df.loc[:, ["Algorithm", "Scale", "Bit", "Throughput"]]
     df_throughput = (
-        df.groupby(["Algorithm", "Scale", "Bit"]).mean(numeric_only=True).reset_index()
+        df_throughput.groupby(["Algorithm", "Param", "Thread"], dropna=False)
+        .mean(numeric_only=True)
+        .reset_index()
     )
+
+    lru_tp = df_throughput.set_index(["Thread"]).index.map(
+        df_throughput.set_index("Algorithm")
+        .loc["LRU"]
+        .set_index(["Thread"])["Throughput"]
+    )
+    df_throughput["Relative Throughput [LRU]"] = df_throughput["Throughput"] / lru_tp
+
     df_mean = (
-        df.groupby(["Algorithm", "Scale", "Bit"]).mean(numeric_only=True).reset_index()
+        processed.loc[
+            :,
+            [
+                "Algorithm",
+                "Scale",
+                "Relative Miss Ratio [LRU]",
+                "Relative Promotion [LRU]",
+            ],
+        ]
+        .groupby(["Algorithm", "Scale"])
+        .mean(numeric_only=True)
+        .reset_index()
     )
     overall_throughput = pd.merge(
-        df_throughput,
         df_mean,
-        left_on=["Algorithm", "Scale", "Bit"],
-        right_on=["Algorithm", "Scale", "Bit"],
+        df_throughput,
+        left_on=["Algorithm", "Scale"],
+        right_on=["Algorithm", "Param"],
         how="inner",
     )
-    overall_throughput.to_csv(script_dir / "data/throughput.csv")
-    overall_throughput.to_feather(script_dir / "data/throughput.feather")
+    overall_throughput.to_csv(script_dir / "data/processed_scalability.csv")
+    overall_throughput.to_feather(script_dir / "data/processed_scalability.feather")
 else:
     print("Throughput data is not available")
