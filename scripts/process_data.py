@@ -100,12 +100,14 @@ if not df_throughput.empty:
         .reset_index()
     )
 
-    lru_tp = df_throughput.set_index(["Thread"]).index.map(
-        df_throughput.set_index("Algorithm")
-        .loc["LRU"]
-        .set_index(["Thread"])["Throughput"]
+    lru_tp = df_throughput[df_throughput["Algorithm"] == "LRU"].set_index("Thread")[
+        "Throughput"
+    ]
+
+    df_throughput["Relative Throughput [LRU]"] = df_throughput["Thread"].map(lru_tp)
+    df_throughput["Relative Throughput [LRU]"] = (
+        df_throughput["Throughput"] / df_throughput["Relative Throughput [LRU]"]
     )
-    df_throughput["Relative Throughput [LRU]"] = df_throughput["Throughput"] / lru_tp
 
     df_mean = (
         processed.loc[
