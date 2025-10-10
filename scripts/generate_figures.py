@@ -80,7 +80,7 @@ def figure2a(general: pd.DataFrame, scalability: pd.DataFrame):
 
 def figure2b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "Prob" and Thread == 16')
-    plt_wrapper.plt_box(
+    plt_wrapper.plt_bar(
         data,
         y="Relative Throughput [LRU]",
         y_label="Throughput relative to LRU",
@@ -90,7 +90,6 @@ def figure2b(general: pd.DataFrame, scalability: pd.DataFrame):
         hue="Algorithm",
         palette=["lightblue"],
         output_pdf="figures/figure2b.pdf",
-        marker_size=11,
         invert=True,
     )
 
@@ -131,7 +130,7 @@ def figure3a(general: pd.DataFrame, scalability: pd.DataFrame):
 
 def figure3b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "Batch" and Thread == 16')
-    plt_wrapper.plt_box(
+    plt_wrapper.plt_bar(
         data,
         y="Relative Throughput [LRU]",
         y_label="Throughput relative to LRU",
@@ -141,7 +140,6 @@ def figure3b(general: pd.DataFrame, scalability: pd.DataFrame):
         hue="Algorithm",
         palette=["lightblue"],
         output_pdf="figures/figure3b.pdf",
-        marker_size=11,
     )
 
 
@@ -180,7 +178,7 @@ def figure4a(general: pd.DataFrame, scalability: pd.DataFrame):
 
 def figure4b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "Delay" and Thread == 16')
-    plt_wrapper.plt_box(
+    plt_wrapper.plt_bar(
         data,
         y="Relative Throughput [LRU]",
         y_label="Throughput relative to LRU",
@@ -190,7 +188,6 @@ def figure4b(general: pd.DataFrame, scalability: pd.DataFrame):
         hue="Algorithm",
         palette=["lightblue"],
         output_pdf="figures/figure4b.pdf",
-        marker_size=11,
     )
 
 
@@ -229,7 +226,7 @@ def figure5a(general: pd.DataFrame, scalability: pd.DataFrame):
 
 def figure5b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "FR" and Thread == 16')
-    plt_wrapper.plt_box(
+    plt_wrapper.plt_bar(
         data,
         y="Relative Throughput [LRU]",
         y_label="Throughput relative to LRU",
@@ -239,7 +236,6 @@ def figure5b(general: pd.DataFrame, scalability: pd.DataFrame):
         hue="Algorithm",
         palette=["lightblue"],
         output_pdf="figures/figure5b.pdf",
-        marker_size=11,
     )
 
 
@@ -261,7 +257,7 @@ def figure5c(general: pd.DataFrame, scalability: pd.DataFrame):
 
 def figure6a(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "Random" and Thread == 16')
-    plt_wrapper.plt_box(
+    plt_wrapper.plt_bar(
         data,
         y="Relative Throughput [LRU]",
         y_label="Throughput relative to LRU",
@@ -271,7 +267,6 @@ def figure6a(general: pd.DataFrame, scalability: pd.DataFrame):
         hue="Algorithm",
         palette=["lightblue"],
         output_pdf="figures/figure6a.pdf",
-        marker_size=11,
     )
 
 

@@ -312,3 +312,100 @@ def plt_scatter(
     svg_base64 = base64.b64encode(buf.read()).decode("utf-8")
     md = f"![plot](data:image/svg+xml;base64,{svg_base64})"
     return md
+
+
+def plt_bar(
+    df: pd.DataFrame,
+    x,
+    y,
+    x_label=None,
+    y_label=None,
+    fontsize=32,
+    legend_font_size=28,
+    show_legend=False,
+    hue=None,
+    title="",
+    tick_step=None,
+    # width=0.8,
+    # gap=0.4,
+    x_size=None,
+    y_size=None,
+    output_pdf=None,
+    invert=False,
+    **kwargs,
+) -> str:
+    tmp = df.sort_values(
+        by=x,
+        key=lambda col: col.map(
+            lambda x: (0, float(x))
+            if str(x).replace(".", "", 1).isdigit()
+            else (1, str(x))
+        ),
+    )
+
+    x_size = 2 * len(df[x].unique()) if x_size is None else x_size
+    y_size = 7 if y_size is None else y_size
+    plt.figure(figsize=(x_size, y_size))
+
+    ax = sns.barplot(
+        data=tmp,
+        x=x,
+        y=y,
+        hue=hue,
+        # width=width,
+        # gap=gap,
+        **kwargs,
+    )
+
+    for _, patch in enumerate(ax.patches):
+        patch.set_linewidth(3)
+        patch.set_edgecolor("black")
+
+    ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=5))
+
+    if tick_step is not None:
+        ymin, ymax = ax.get_ylim()
+        ticks_up = np.arange(1, ymax, tick_step)
+        ticks_down = np.arange(1, ymin, -tick_step)
+        new_ticks = np.unique(np.concatenate([ticks_up, ticks_down]))
+        ax.set_yticks(new_ticks)
+
+    if show_legend:
+        legend = ax.legend(fontsize=legend_font_size)
+        # legend.get_frame().set_edgecolor("black")
+        legend.get_frame().set_linewidth(0)  # no border
+        legend.get_frame().set_facecolor("none")
+    else:
+        ax.legend().remove()
+
+    plt.title(title, fontsize=fontsize)
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+    plt.grid(True, color="lightgray", linestyle="--", linewidth=2)
+    plt.xlabel(x, fontsize=fontsize) if x_label is None else plt.xlabel(
+        x_label, fontsize=fontsize
+    )
+    plt.ylabel(y, fontsize=fontsize) if y_label is None else plt.ylabel(
+        y_label, fontsize=fontsize
+    )
+    plt.yticks(fontsize=fontsize)
+
+    labels = [t.get_text() for t in ax.get_xticklabels()]
+    if labels and max(len(lbl) for lbl in labels) > 8:
+        plt.xticks(rotation=-30, ha="center", fontsize=fontsize)
+    else:
+        plt.xticks(fontsize=fontsize)
+
+    if invert:
+        plt.gca().invert_xaxis()
+
+    plt.tight_layout()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="svg", bbox_inches="tight")
+    plt.savefig(
+        output_pdf, format="pdf", bbox_inches="tight"
+    ) if output_pdf is not None else None
+    plt.close()
+    buf.seek(0)
+    svg_base64 = base64.b64encode(buf.read()).decode("utf-8")
+    md = f"![plot](data:image/svg+xml;base64,{svg_base64})"
+    return md
