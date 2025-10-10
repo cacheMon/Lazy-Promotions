@@ -10,7 +10,8 @@ general_pattern = re.compile(
     r".*?\s+(?P<algo>[A-Za-z0-9_]+)"
     r"(?:-(?P<config>[A-Za-z0-9_.= -]+))?"
     r"\s+cache size\s+(?P<cache_size>[A-Za-z0-9_.-]+),\s+"
-    r"(?P<requests>\d+)\s+req,\s+miss ratio\s+(?P<miss_ratio>\d+(?:\.\d+)?),\s+"
+    r"(?P<requests>\d+)\s+req,\s+miss ratio\s+(?P<miss_ratio>\d+(?:\.\d+)?)"
+    r"(?:,\s+throughput\s+(?P<throughput>\d+(?:\.\d+)?)\s+MQPS)?"  # optional throughput, if you need it
     r"(?:,\s+promotion\s+(?P<promotion>\d+))?"
 )
 
@@ -90,7 +91,7 @@ def parse_line(line: str, filename: str, cache_size: float):
             "Real Cache Size": int(d["cache_size"]),
             "Request": int(d["requests"]),
             "Miss Ratio": float(d["miss_ratio"]),
-            "Reinserted": int(d["promotion"]) if d["promotion"] is not None else 1,
+            "Reinserted": int(d["promotion"]) if d["promotion"] is not None else 0,
             "Trace": filename[filename.rfind("/") + 1 :],
             "Trace Path": filename,
             "Cache Size": 0.01,
@@ -127,9 +128,6 @@ def ReadData():
                 if key not in datasets:
                     continue
                 row = parse_line(line, datasets[key], 0.1)
-                if "dummy.txt" in line:
-                    print("line: ", line)
-                    print("rowL ", row)
                 if row:
                     rows.append(row)
     return pd.DataFrame(rows)
