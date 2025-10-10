@@ -10,6 +10,7 @@
 //  Copyright © 2018 Juncheng. All rights reserved.
 //
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -49,6 +50,7 @@ static void OptClock_reset(cache_t *cache);
 // ***********************************************************************
 struct lifetime_md {
   uint64_t lifetime_freq = 0;
+  uint64_t last_promotion = 0;
 };
 struct OptClock_params_t {
   cache_obj_t *q_head;
@@ -67,9 +69,8 @@ struct OptClock_params_t {
   int64_t iteration;
   bool active;
 
-  std::unordered_map<obj_id_t, lifetime_md> lifetime_mds = std::unordered_map<obj_id_t, lifetime_md>();
-  std::unordered_map<obj_id_t, std::unordered_set<uint64_t>> bad_promotions =
-      std::unordered_map<obj_id_t, std::unordered_set<uint64_t>>();
+  std::unordered_map<obj_id_t, lifetime_md> lifetime_mds = {};
+  std::unordered_map<obj_id_t, std::unordered_set<uint64_t>> bad_promotions = {};
 };
 cache_t *OptClock_init(const common_cache_params_t ccache_params, const char *cache_specific_params) {
   cache_t *cache = cache_struct_init("OptClock", ccache_params, cache_specific_params);
@@ -118,9 +119,9 @@ static bool OptClock_get(cache_t *cache, const request_t *req) { return cache_ge
 
 static cache_obj_t *OptClock_find(cache_t *cache, const request_t *req, const bool update_cache) {
   OptClock_params_t *params = (OptClock_params_t *)cache->eviction_params;
+  params->lifetime_mds[req->obj_id].lifetime_freq += 1;
   cache_obj_t *obj = cache_find_base(cache, req, update_cache);
   if (obj != NULL && update_cache) {
-    params->lifetime_mds[obj->obj_id].lifetime_freq += 1;
     if (obj->opt_clock.freq < params->max_freq) {
       obj->opt_clock.freq += 1;
     }
@@ -132,25 +133,25 @@ static cache_obj_t *OptClock_insert(cache_t *cache, const request_t *req) {
   OptClock_params_t *params = (OptClock_params_t *)cache->eviction_params;
   cache_obj_t *obj = cache_insert_base(cache, req);
   prepend_obj_to_head(&params->q_head, &params->q_tail, obj);
-
   obj->opt_clock.freq = 0;
   obj->opt_clock.promotion_time = 0;
   return obj;
 }
 
 static cache_obj_t *OptClock_to_evict(cache_t *cache, const request_t *req) {
-  OptClock_params_t *params = (OptClock_params_t *)cache->eviction_params;
-  int n_round = 0;
-  cache_obj_t *obj_to_evict = params->q_tail;
-  while (obj_to_evict->opt_clock.freq - n_round >= 1) {
-    obj_to_evict = obj_to_evict->queue.prev;
-    if (obj_to_evict == NULL) {
-      obj_to_evict = params->q_tail;
-      n_round += 1;
-    }
-  }
-
-  return obj_to_evict;
+  // OptClock_params_t *params = (OptClock_params_t *)cache->eviction_params;
+  // int n_round = 0;
+  // cache_obj_t *obj_to_evict = params->q_tail;
+  // while (obj_to_evict->opt_clock.freq - n_round >= 1) {
+  //   obj_to_evict = obj_to_evict->queue.prev;
+  //   if (obj_to_evict == NULL) {
+  //     obj_to_evict = params->q_tail;
+  //     n_round += 1;
+  //   }
+  // }
+  //
+  // return obj_to_evict;
+  assert(false);
 }
 
 static void OptClock_force_evict(cache_t *cache) {
@@ -164,8 +165,10 @@ static void OptClock_evict(cache_t *cache, const request_t *req) {
   OptClock_params_t *params = (OptClock_params_t *)cache->eviction_params;
   cache_obj_t *obj_to_evict = params->q_tail;
   while (obj_to_evict->opt_clock.freq >= 1) {
-    obj_to_evict->opt_clock.promotion_time = params->lifetime_mds[obj_to_evict->obj_id].lifetime_freq;
-    if (params->bad_promotions[obj_to_evict->obj_id].find(obj_to_evict->opt_clock.promotion_time) !=
+    auto &lifetime_md = params->lifetime_mds[obj_to_evict->obj_id];
+    auto &md = obj_to_evict->opt_clock;
+    md.promotion_time = lifetime_md.lifetime_freq;
+    if (params->bad_promotions[obj_to_evict->obj_id].find(md.promotion_time) !=
         params->bad_promotions[obj_to_evict->obj_id].end()) {
       break;
     }
