@@ -11,10 +11,37 @@ general_pattern = re.compile(
     r"\.[A-Za-z0-9]+\s+"
     r"(?P<algo>[A-Za-z0-9_]+?)"
     r"(?:[-_](?P<param>[0-9.]+))?"
-    r"(?=\s+cache).*?"
-    r"throughput\s+(?P<throughput>[0-9.]+)"
+    r"\s+cache size\s+(?P<cache_size>[0-9A-Za-z]+),"
+    r".*?throughput\s+(?P<throughput>[0-9.]+)"
     r".*?thread_num\s+(?P<num_thread>[0-9]+)"
 )
+
+
+def parse_size(size_str: str) -> int:
+    size_str = size_str.strip().replace(" ", "")
+    units = {
+        "B": 1,
+        "KB": 1000,
+        "MB": 1000**2,
+        "GB": 1000**3,
+        "TB": 1000**4,
+        "PB": 1000**5,
+        "KiB": 1024,
+        "MiB": 1024**2,
+        "GiB": 1024**3,
+        "TiB": 1024**4,
+        "PiB": 1024**5,
+    }
+
+    import re
+
+    m = re.match(r"([0-9.]+)([A-Za-z]+)", size_str)
+    if not m:
+        raise ValueError(f"Invalid size string: {size_str}")
+
+    num, unit = m.groups()
+    multiplier = units.get(unit, 1)
+    return int(float(num) * multiplier)
 
 
 def parse_line(line: str):
@@ -37,6 +64,7 @@ def parse_line(line: str):
             else 1.0
             if d["algo"] == "Clock"
             else 0.0,
+            "Cache Size": parse_size(d["cache_size"]),
             "Throughput": float(d["throughput"]),
             "Thread": float(d["num_thread"]),
         }
@@ -63,6 +91,20 @@ def main():
         raise ValueError("Missing required argument: data path")
 
     data = ReadData(sys.argv[1])
+    data = data[
+        data.groupby(["Algorithm", "Thread", "Param"])["Cache Size"].transform("max")
+        == data["Cache Size"]
+    ]
+    data = data.groupby(["Algorithm", "Thread", "Param"], as_index=False)[
+        "Throughput"
+    ].mean()
+
+    ref = data.loc[data["Algorithm"] == "LRU", ["Thread", "Throughput"]].rename(
+        columns={"Throughput": "Throughput_ref"}
+    )
+    data = data.merge(ref, on="Thread", how="left")
+    data["Relative Throughput [LRU]"] = data["Throughput"] / data["Throughput_ref"]
+
     script_dir = Path(__file__).resolve().parent
     os.makedirs(script_dir / "data", exist_ok=True)
     data.to_feather(script_dir / "data/scalability.feather")

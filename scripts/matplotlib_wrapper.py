@@ -326,8 +326,8 @@ def plt_bar(
     hue=None,
     title="",
     tick_step=None,
-    # width=0.8,
-    # gap=0.4,
+    upper=14,
+    lower=0,
     x_size=None,
     y_size=None,
     output_pdf=None,
@@ -363,12 +363,7 @@ def plt_bar(
 
     ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=5))
 
-    if tick_step is not None:
-        ymin, ymax = ax.get_ylim()
-        ticks_up = np.arange(1, ymax, tick_step)
-        ticks_down = np.arange(1, ymin, -tick_step)
-        new_ticks = np.unique(np.concatenate([ticks_up, ticks_down]))
-        ax.set_yticks(new_ticks)
+    plt.yticks(range(lower, upper + 1, 2))
 
     if show_legend:
         legend = ax.legend(fontsize=legend_font_size)
