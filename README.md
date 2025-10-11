@@ -314,7 +314,7 @@ sudo bash disable_hyperthreading.sh off # requires admin privileges
 
 To restrict execution to a single NUMA domain, use lscpu to identify the CPUs that belong to the same NUMA node. Then use taskset to pin the program to those cores:
 ```
-taskset -c <cpu_list> ./program
+taskset -c <cpu_list> ./generate_scalabilty_task.sh
 ```
 The script used to generate the scalability experiment tasks is:
 ```
