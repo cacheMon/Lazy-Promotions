@@ -2,7 +2,7 @@
 
 set -eux
 
-simulator=~/Lazy-Promotions/simulator-concurrent/_build/bin
+simulator=$HOME/Lazy-Promotions/simulator-concurrent/_build/bin
 
 run_simulation()
 {
@@ -23,7 +23,7 @@ num_iteration=5
 output_dir=~/results/
 mkdir -p $output_dir
 
-threads_list=(1 2 4 8 12 16 20)
+threads_list=(16)
 
 for iteration in $(seq 1 $num_iteration); do
 
