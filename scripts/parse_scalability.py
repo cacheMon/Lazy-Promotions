@@ -12,6 +12,7 @@ general_pattern = re.compile(
     r"(?P<algo>[A-Za-z0-9_]+?)"
     r"(?:[-_](?P<param>[0-9.]+))?"
     r"\s+cache size\s+(?P<cache_size>[0-9A-Za-z]+),"
+    r".*?miss ratio\s+(?P<miss_ratio>[0-9.]+),"
     r".*?throughput\s+(?P<throughput>[0-9.]+)"
     r".*?thread_num\s+(?P<num_thread>[0-9]+)"
 )
@@ -64,6 +65,7 @@ def parse_line(line: str):
             else 1.0
             if d["algo"] == "Clock"
             else 0.0,
+            "Miss Ratio": float(d["miss_ratio"]),
             "Cache Size": parse_size(d["cache_size"]),
             "Throughput": float(d["throughput"]),
             "Thread": float(d["num_thread"]),
@@ -91,20 +93,6 @@ def main():
         raise ValueError("Missing required argument: data path")
 
     data = ReadData(sys.argv[1])
-    data = data[
-        data.groupby(["Algorithm", "Thread", "Param"])["Cache Size"].transform("max")
-        == data["Cache Size"]
-    ]
-    data = data.groupby(["Algorithm", "Thread", "Param"], as_index=False)[
-        "Throughput"
-    ].mean()
-
-    ref = data.loc[data["Algorithm"] == "LRU", ["Thread", "Throughput"]].rename(
-        columns={"Throughput": "Throughput_ref"}
-    )
-    data = data.merge(ref, on="Thread", how="left")
-    data["Relative Throughput [LRU]"] = data["Throughput"] / data["Throughput_ref"]
-
     script_dir = Path(__file__).resolve().parent
     os.makedirs(script_dir / "data", exist_ok=True)
     data.to_feather(script_dir / "data/scalability.feather")

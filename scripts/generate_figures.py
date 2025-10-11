@@ -3,6 +3,15 @@ import matplotlib_wrapper as plt_wrapper
 import style
 import numpy as np
 
+MISS_RATIO_VAL = "Relative Miss Ratio [LRU]"
+MISS_RATIO_LABEL = "Miss ratio relative to LRU"
+
+THROUGHPUT_VAL = "Relative Throughput [LRU]"
+THROUGHPUT_LABEL = "Throughput relative to LRU"
+
+THROUGHPUT_VAL = "Throughput"
+THROUGHPUT_LABEL = "Throughput"
+
 
 def figure1a(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query(
@@ -10,10 +19,10 @@ def figure1a(general: pd.DataFrame, scalability: pd.DataFrame):
     )
     plt_wrapper.plt_scatter(
         data,
-        "Relative Miss Ratio [LRU]",
-        "Relative Throughput [LRU]",
-        x_label="Miss ratio relative to LRU",
-        y_label="Throughput relative to LRU",
+        MISS_RATIO_VAL,
+        THROUGHPUT_VAL,
+        x_label=MISS_RATIO_LABEL,
+        y_label=THROUGHPUT_LABEL,
         hue="Algorithm",
         markers=style.markers,
         palette=style.palette,
@@ -36,8 +45,8 @@ def figure1b(general: pd.DataFrame, scalability: pd.DataFrame):
         mean,
         y="Relative Promotion [LRU]",
         y_label="Promotions relative to LRU",
-        x="Relative Miss Ratio [LRU]",
-        x_label="Miss ratio relative to LRU",
+        x=MISS_RATIO_VAL,
+        x_label=MISS_RATIO_LABEL,
         hue="Algorithm",
         markers=style.markers,
         palette={
@@ -82,8 +91,8 @@ def figure2b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "Prob" and Thread == 16')
     plt_wrapper.plt_bar(
         data,
-        y="Relative Throughput [LRU]",
-        y_label="Throughput relative to LRU",
+        y=THROUGHPUT_VAL,
+        y_label=THROUGHPUT_LABEL,
         x="Scale",
         x_label="Prob",
         x_size=12,
@@ -98,8 +107,8 @@ def figure2c(general: pd.DataFrame, scalability: pd.DataFrame):
     data = general.query('Algorithm == "Prob"')
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Scale",
         x_label="Prob",
         x_size=12,
@@ -132,8 +141,8 @@ def figure3b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "Batch" and Thread == 16')
     plt_wrapper.plt_bar(
         data,
-        y="Relative Throughput [LRU]",
-        y_label="Throughput relative to LRU",
+        y=THROUGHPUT_VAL,
+        y_label=THROUGHPUT_LABEL,
         x="Scale",
         x_label="Batch size",
         x_size=12,
@@ -147,8 +156,8 @@ def figure3c(general: pd.DataFrame, scalability: pd.DataFrame):
     data = general.query('Algorithm == "Batch"')
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Scale",
         x_label="Batch size",
         x_size=12,
@@ -180,8 +189,8 @@ def figure4b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "Delay" and Thread == 16')
     plt_wrapper.plt_bar(
         data,
-        y="Relative Throughput [LRU]",
-        y_label="Throughput relative to LRU",
+        y=THROUGHPUT_VAL,
+        y_label=THROUGHPUT_LABEL,
         x="Scale",
         x_label="Delay",
         x_size=12,
@@ -195,8 +204,8 @@ def figure4c(general: pd.DataFrame, scalability: pd.DataFrame):
     data = general.query('Algorithm == "Delay"')
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Scale",
         x_label="Delay ratio",
         x_size=12,
@@ -228,8 +237,8 @@ def figure5b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "FR" and Thread == 16')
     plt_wrapper.plt_bar(
         data,
-        y="Relative Throughput [LRU]",
-        y_label="Throughput relative to LRU",
+        y=THROUGHPUT_VAL,
+        y_label=THROUGHPUT_LABEL,
         x="Scale",
         x_label="# Frequency bits",
         x_size=12,
@@ -243,8 +252,8 @@ def figure5c(general: pd.DataFrame, scalability: pd.DataFrame):
     data = general.query('Algorithm == "FR"')
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Bit",
         x_label="# Frequency bits",
         x_size=12,
@@ -259,8 +268,8 @@ def figure6a(general: pd.DataFrame, scalability: pd.DataFrame):
     data = scalability.query('Algorithm == "Random" and Thread == 16')
     plt_wrapper.plt_bar(
         data,
-        y="Relative Throughput [LRU]",
-        y_label="Throughput relative to LRU",
+        y=THROUGHPUT_VAL,
+        y_label=THROUGHPUT_LABEL,
         x="Scale",
         x_label="Sample size",
         x_size=12,
@@ -274,8 +283,8 @@ def figure6b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = general.query('Algorithm == "Random"')
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Scale",
         x_label="Sample size",
         x_size=12,
@@ -439,8 +448,8 @@ def figure9a(general: pd.DataFrame, scalability: pd.DataFrame):
     data["Scale"] = data["Scale"].apply(format_scale)
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Scale",
         x_label="Factor",
         x_size=12,
@@ -464,8 +473,8 @@ def figure9b(general: pd.DataFrame, scalability: pd.DataFrame):
     data["Scale"] = data["Scale"].apply(format_scale)
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Scale",
         x_label="Factor",
         x_size=12,
@@ -522,8 +531,8 @@ def figure10b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = general.query('Algorithm == "Offline-FR"')
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Scale",
         x_label="# Iteration",
         x_size=12,
@@ -589,8 +598,8 @@ def figure11b(general: pd.DataFrame, scalability: pd.DataFrame):
     )
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Algorithm",
         x_label="",
         x_size=12,
@@ -651,8 +660,8 @@ def figure12b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = general.query('Algorithm == "D-FR"')
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Scale",
         x_label="Delay ratio",
         x_size=12,
@@ -700,8 +709,8 @@ def figure13b(general: pd.DataFrame, scalability: pd.DataFrame):
     data = general.query('Algorithm == "AGE"')
     plt_wrapper.plt_box(
         data,
-        y="Relative Miss Ratio [LRU]",
-        y_label="Miss ratio relative to LRU",
+        y=MISS_RATIO_VAL,
+        y_label=MISS_RATIO_LABEL,
         x="Scale",
         x_label="Factor",
         x_size=12,

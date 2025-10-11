@@ -94,11 +94,26 @@ processed["Scale"] = processed["Scale"].fillna(processed["Bit"])
 
 df_throughput = pd.read_feather(script_dir / "data/scalability.feather")
 if not df_throughput.empty:
-    df_throughput = (
-        df_throughput.groupby(["Algorithm", "Param", "Thread"], dropna=False)
-        .mean(numeric_only=True)
-        .reset_index()
+    df_throughput = df_throughput[
+        df_throughput.groupby(["Algorithm", "Thread", "Param"])["Cache Size"].transform(
+            "max"
+        )
+        == df_throughput["Cache Size"]
+    ]
+    df_throughput = df_throughput.groupby(
+        ["Algorithm", "Thread", "Param"], as_index=False
+    )["Throughput"].median()
+
+    ref = df_throughput.loc[
+        df_throughput["Algorithm"] == "LRU", ["Thread", "Throughput"]
+    ].rename(columns={"Throughput": "Throughput_ref"})
+
+    df_throughput = df_throughput.merge(ref, on="Thread", how="left")
+
+    df_throughput["Relative Throughput [LRU]"] = (
+        df_throughput["Throughput"] / df_throughput["Throughput_ref"]
     )
+
     df_mean = (
         processed.loc[
             :,
