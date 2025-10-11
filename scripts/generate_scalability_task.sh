@@ -19,7 +19,7 @@ run_simulation()
     fi
 }
 
-num_iteration=20
+num_iteration=10
 output_dir=~/results/
 mkdir -p $output_dir
 
