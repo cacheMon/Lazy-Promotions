@@ -1,4 +1,5 @@
 simulator/.cache/clangd/index
 simulator/compile_commands.json
-scripts/data
+scripts/data/*.feather
+scripts/data/*.csv
 scripts/figures
