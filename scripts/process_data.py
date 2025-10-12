@@ -102,7 +102,7 @@ if not df_throughput.empty:
     ]
     df_throughput = df_throughput.groupby(
         ["Algorithm", "Thread", "Param"], as_index=False
-    )["Throughput"].median()
+    )["Throughput"].mean()
 
     ref = df_throughput.loc[
         df_throughput["Algorithm"] == "LRU", ["Thread", "Throughput"]
