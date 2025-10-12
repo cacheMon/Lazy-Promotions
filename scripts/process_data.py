@@ -10,11 +10,9 @@ from pprint import pprint
 def ProcessData(df: pd.DataFrame):
     df = df.round(4)
     df = df.query("`Ignore Obj Size` == 1")
-    df = df.sort_values(by="Trace Path")
     df = df.query("`Real Cache Size` >= 10")
     df = df.query("`Request` >= 1_000_000")
 
-    df["Trace Group"] = df["Trace Path"].apply(lambda x: Path(x).parts[0])
     df["Miss"] = df["Request"] * df["Miss Ratio"]
 
     fifo_miss_ratio = df.set_index(["Cache Size", "Trace Path"]).index.map(
@@ -88,7 +86,10 @@ def ProcessData(df: pd.DataFrame):
 
 
 script_dir = Path(__file__).resolve().parent
+
 df = pd.read_feather(script_dir / "data/data.feather")
+df = df.sort_values(by="Trace Path")
+df["Trace Group"] = df["Trace Path"].apply(lambda x: Path(x).parts[0])
 
 processed = ProcessData(df)
 processed.to_csv(script_dir / "data/processed.csv")
@@ -96,16 +97,23 @@ processed.to_feather(script_dir / "data/processed.feather")
 
 processed["Scale"] = processed["Scale"].fillna(processed["Bit"])
 
-counts = (
-    processed.groupby("Trace Group")["Trace Path"]
-    .nunique()
-    .reset_index(name="Unique Trace Path Count")
-)  # type: ignore[arg-type]
-pprint(counts)
-pprint(processed.query("`Trace Group` == 'sample'")["Trace Path"].unique())
+
+def CountTraces(df: pd.DataFrame):
+    counts = (
+        df.groupby("Trace Group")["Trace Path"]
+        .nunique()
+        .reset_index(name="Unique Trace Path Count")
+    )  # type: ignore[arg-type]
+    pprint(counts)
+    pprint(df.query("`Trace Group` == 'sample'")["Trace Path"].unique())
+
+
+print("# Processed")
+CountTraces(processed)
+print("# Raw")
+CountTraces(df)
 
 df_throughput = pd.read_feather(script_dir / "data/scalability.feather")
-
 if not df_throughput.empty:
     df_throughput = df_throughput[
         df_throughput.groupby(["Algorithm", "Thread", "Param"])["Cache Size"].transform(
@@ -113,6 +121,7 @@ if not df_throughput.empty:
         )
         == df_throughput["Cache Size"]
     ]
+    df_throughput.query("Thread == 16").to_csv("idk.csv")
 
     df_throughput = df_throughput.groupby(
         ["Algorithm", "Thread", "Param"], as_index=False
