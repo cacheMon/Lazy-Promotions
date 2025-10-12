@@ -242,6 +242,7 @@ def plt_scatter(
     y_size=6 * 3.8 / 3,
     output_pdf=None,
     axis_font_size=42,
+    cols=3,
     **kwargs,
 ) -> str:
     plt.figure(figsize=(x_size, y_size))
@@ -273,7 +274,7 @@ def plt_scatter(
         plt.legend(
             loc="upper center",
             bbox_to_anchor=(0.5, 1.3),
-            ncol=3,
+            ncol=cols,
             frameon=False,
             fontsize=legend_font_size,
             # mode="expand",  # <-- stretch legend to full width

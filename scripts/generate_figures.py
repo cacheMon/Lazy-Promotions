@@ -25,7 +25,16 @@ def figure1a(general: pd.DataFrame, scalability: pd.DataFrame):
         y_label=THROUGHPUT_LABEL,
         hue="Algorithm",
         markers=style.markers,
-        palette=style.palette,
+        palette=[
+            "#eff3ff",
+            "#bdd7e7",
+            "#6baed6",
+            "#3182bd",
+            "#08519c",
+        ],
+        cols=2,
+        order=["Batch", "Prob", "Random", "Delay", "FR"],
+        alpha=0.8,
         output_pdf="figures/figure1a.pdf",
     )
     pass
