@@ -113,9 +113,7 @@ def ReadData():
     with open("./datasets.txt", "r") as f:
         paths = f.readlines()
     paths = [p.strip() for p in paths]
-    datasets = {
-        p[p.rfind("/") + 1 :]: re.sub(r"\.oracleGeneral\S*", "", p) for p in paths
-    }
+    datasets = {p[p.rfind("/") + 1 :]: p for p in paths}
     rows = []
     outputs = Path(DATA_PATH).rglob("*")
     for file in outputs:

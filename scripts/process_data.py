@@ -1,6 +1,10 @@
 import sys
+import textual_pandas
 import pandas as pd
 from pathlib import Path
+import numpy as np
+from scipy.stats import gaussian_kde
+from pprint import pprint
 
 
 def ProcessData(df: pd.DataFrame):
@@ -92,7 +96,16 @@ processed.to_feather(script_dir / "data/processed.feather")
 
 processed["Scale"] = processed["Scale"].fillna(processed["Bit"])
 
+counts = (
+    processed.groupby("Trace Group")["Trace Path"]
+    .nunique()
+    .reset_index(name="Unique Trace Path Count")
+)  # type: ignore[arg-type]
+pprint(counts)
+pprint(processed.query("`Trace Group` == 'sample'")["Trace Path"].unique())
+
 df_throughput = pd.read_feather(script_dir / "data/scalability.feather")
+
 if not df_throughput.empty:
     df_throughput = df_throughput[
         df_throughput.groupby(["Algorithm", "Thread", "Param"])["Cache Size"].transform(
@@ -100,6 +113,7 @@ if not df_throughput.empty:
         )
         == df_throughput["Cache Size"]
     ]
+
     df_throughput = df_throughput.groupby(
         ["Algorithm", "Thread", "Param"], as_index=False
     )["Throughput"].mean()
@@ -113,6 +127,7 @@ if not df_throughput.empty:
     df_throughput["Relative Throughput [LRU]"] = (
         df_throughput["Throughput"] / df_throughput["Throughput_ref"]
     )
+    df_throughput = df_throughput.query("Thread == 16")
 
     df_mean = (
         processed.loc[
