@@ -9,8 +9,8 @@ MISS_RATIO_LABEL = "Miss ratio relative to LRU"
 THROUGHPUT_VAL = "Relative Throughput [LRU]"
 THROUGHPUT_LABEL = "Throughput relative to LRU"
 
-THROUGHPUT_VAL = "Throughput"
-THROUGHPUT_LABEL = "Throughput"
+# THROUGHPUT_VAL = "Throughput"
+# THROUGHPUT_LABEL = "Throughput"
 
 
 def figure1a(general: pd.DataFrame, scalability: pd.DataFrame):
