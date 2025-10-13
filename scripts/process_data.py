@@ -108,10 +108,11 @@ def CountTraces(df: pd.DataFrame):
     pprint(df.query("`Trace Group` == 'sample'")["Trace Path"].unique())
 
 
-print("# Processed")
-CountTraces(processed)
-print("# Raw")
-CountTraces(df)
+if len(sys.argv) > 1 and sys.argv[1] == "count":
+    print("# Processed")
+    CountTraces(processed)
+    print("# Raw")
+    CountTraces(df)
 
 df_throughput = pd.read_feather(script_dir / "data/scalability.feather")
 if not df_throughput.empty:
