@@ -98,22 +98,6 @@ processed.to_feather(script_dir / "data/processed.feather")
 processed["Scale"] = processed["Scale"].fillna(processed["Bit"])
 
 
-def CountTraces(df: pd.DataFrame):
-    counts = (
-        df.groupby("Trace Group")["Trace Path"]
-        .nunique()
-        .reset_index(name="Unique Trace Path Count")
-    )  # type: ignore[arg-type]
-    pprint(counts)
-    pprint(df.query("`Trace Group` == 'sample'")["Trace Path"].unique())
-
-
-if len(sys.argv) > 1 and sys.argv[1] == "count":
-    print("# Processed")
-    CountTraces(processed)
-    print("# Raw")
-    CountTraces(df)
-
 df_throughput = pd.read_feather(script_dir / "data/scalability.feather")
 if not df_throughput.empty:
     df_throughput = df_throughput[
