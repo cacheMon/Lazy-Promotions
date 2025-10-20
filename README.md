@@ -320,17 +320,7 @@ The script used to generate the scalability experiment tasks is:
 ```
 scripts/generate_scalability_task.sh
 ```
-<!-- 1.**figures 1a** (overall best param) -->
-<!---->
-<!-- 2.**figures 2b** (prob all params) -->
-<!---->
-<!-- 3.**figures 3b** (batch all params) -->
-<!---->
-<!-- 4.**figures 4b** (delay all params) -->
-<!---->
-<!-- 5.**figures 5b** (clock all params) -->
-<!---->
-<!-- 6.**figures 6a** (random all params) -->
+We provide the scalability results on `scripts/data/` and [Google Drive](https://drive.google.com/file/d/1s9dbl3mWpCmhjlUMC3-b_8Yppf9SFLlh/view?usp=drive_link)
 ### Analyzing Results
 
 The `scripts/` directory contains Python scripts for analyzing the simulation results and generating the figures used in the paper.
