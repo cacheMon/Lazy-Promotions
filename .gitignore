@@ -3,3 +3,4 @@ simulator/compile_commands.json
 scripts/data/*.feather
 scripts/data/*.csv
 scripts/figures
+simulator-concurrent/_build

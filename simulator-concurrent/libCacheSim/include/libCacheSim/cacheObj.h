@@ -6,9 +6,9 @@
 
 #include <assert.h>
 #include <inttypes.h>
+#include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <pthread.h>
 
 #include "../config.h"
 #include "mem.h"
@@ -31,6 +31,12 @@ typedef struct {
 } Clock_obj_metadata_t;
 
 typedef struct {
+  int freq;
+  int64_t next_access_vtime;
+  uint64_t last_reuse_time;
+} DelayFR_obj_metadata_t;
+
+typedef struct {
   void *pq_node;
 } Size_obj_metadata_t;
 
@@ -42,10 +48,10 @@ typedef struct {
 typedef struct {
   void *lfu_next;
   void *lfu_prev;
-  int64_t eviction_vtime:40;
-  int64_t freq:23;
-  int64_t is_ghost:1;
-  int8_t evict_expert; // 1: LRU, 2: LFU
+  int64_t eviction_vtime : 40;
+  int64_t freq : 23;
+  int64_t is_ghost : 1;
+  int8_t evict_expert;  // 1: LRU, 2: LFU
 } __attribute__((packed)) LeCaR_obj_metadata_t;
 
 typedef struct {
@@ -63,8 +69,8 @@ typedef struct {
 } CR_LFU_obj_metadata_t;
 
 typedef struct {
-  int64_t vtime_enter_cache:40;
-  int64_t freq:24;
+  int64_t vtime_enter_cache : 40;
+  int64_t freq : 24;
   void *pq_node;
 } Hyperbolic_obj_metadata_t;
 
@@ -93,7 +99,7 @@ typedef struct {
 
 typedef struct {
   uint64_t last_vtime;
-}delay_obj_metadata_t;
+} delay_obj_metadata_t;
 
 typedef struct {
   int32_t freq;
@@ -133,7 +139,7 @@ typedef struct {
 } QDLP_obj_metadata_t;
 
 typedef struct {
-  int64_t insertion_time;   // measured in number of objects inserted
+  int64_t insertion_time;  // measured in number of objects inserted
   int64_t freq;
   int32_t main_insert_freq;
 } S3FIFO_obj_metadata_t;
@@ -151,20 +157,19 @@ typedef struct {
 struct cache_obj;
 typedef struct cache_obj {
   struct cache_obj *hash_next;
-  struct cache_obj *hash_f_next; //used specifically for FrozenHot extra hashtable
+  struct cache_obj *hash_f_next;  // used specifically for FrozenHot extra hashtable
   obj_id_t obj_id;
   uint32_t obj_size;
   pthread_mutex_t lock;
   struct {
-    struct cache_obj *prev; 
+    struct cache_obj *prev;
     struct cache_obj *next;
   } queue;  // for LRU, FIFO, etc.
 #ifdef SUPPORT_TTL
   uint32_t exp_time;
 #endif
 /* age is defined as the time since the object entered the cache */
-#if defined(TRACK_EVICTION_V_AGE) || \
-    defined(TRACK_DEMOTION) || defined(TRACK_CREATE_TIME)
+#if defined(TRACK_EVICTION_V_AGE) || defined(TRACK_DEMOTION) || defined(TRACK_CREATE_TIME)
   int64_t create_time;
 #endif
   // used by belady related algorithsm
@@ -194,7 +199,7 @@ typedef struct cache_obj {
     lpFIFO_batch_obj_metadata_t lpFIFO_batch;
     lpFIFO_shards_obj_metadata_t lpFIFO_shards;
     delay_obj_metadata_t delay_count;
-    
+    DelayFR_obj_metadata_t delay_FR;
 
 #if defined(ENABLE_GLCACHE) && ENABLE_GLCACHE == 1
     GLCache_obj_metadata_t GLCache;
@@ -208,16 +213,14 @@ struct request;
  * @param req_dest
  * @param cache_obj
  */
-void copy_cache_obj_to_request(struct request *req_dest,
-                               const cache_obj_t *cache_obj);
+void copy_cache_obj_to_request(struct request *req_dest, const cache_obj_t *cache_obj);
 
 /**
  * copy the data from request into cache_obj
  * @param cache_obj
  * @param req
  */
-void copy_request_to_cache_obj(cache_obj_t *cache_obj,
-                               const struct request *req);
+void copy_request_to_cache_obj(cache_obj_t *cache_obj, const struct request *req);
 
 /**
  * create a cache_obj from request
@@ -236,8 +239,7 @@ cache_obj_t *create_cache_obj_from_request(const struct request *req);
  * @param cache_obj
  * @return
  */
-static inline cache_obj_t *prev_obj_in_slist(cache_obj_t *head,
-                                             cache_obj_t *cache_obj) {
+static inline cache_obj_t *prev_obj_in_slist(cache_obj_t *head, cache_obj_t *cache_obj) {
   assert(head != cache_obj);
   while (head != NULL && head->queue.next != cache_obj) head = head->queue.next;
   return head;
@@ -249,8 +251,7 @@ static inline cache_obj_t *prev_obj_in_slist(cache_obj_t *head,
  * @param tail
  * @param cache_obj
  */
-void remove_obj_from_list(cache_obj_t **head, cache_obj_t **tail,
-                          cache_obj_t *cache_obj);
+void remove_obj_from_list(cache_obj_t **head, cache_obj_t **tail, cache_obj_t *cache_obj);
 
 /**
  * move an object to the tail of the LRU queue (a doubly linked list)
@@ -258,8 +259,7 @@ void remove_obj_from_list(cache_obj_t **head, cache_obj_t **tail,
  * @param tail
  * @param cache_obj
  */
-void move_obj_to_tail(cache_obj_t **head, cache_obj_t **tail,
-                      cache_obj_t *cache_obj);
+void move_obj_to_tail(cache_obj_t **head, cache_obj_t **tail, cache_obj_t *cache_obj);
 
 /**
  * move an object to the head of the LRU queue (a doubly linked list)
@@ -267,8 +267,7 @@ void move_obj_to_tail(cache_obj_t **head, cache_obj_t **tail,
  * @param tail
  * @param cache_obj
  */
-void move_obj_to_head(cache_obj_t **head, cache_obj_t **tail,
-                      cache_obj_t *cache_obj);
+void move_obj_to_head(cache_obj_t **head, cache_obj_t **tail, cache_obj_t *cache_obj);
 
 /**
  * prepend the object to the head of the doubly linked list
@@ -277,13 +276,11 @@ void move_obj_to_head(cache_obj_t **head, cache_obj_t **tail,
  * @param tail
  * @param cache_obj
  */
-void prepend_obj_to_head(cache_obj_t **head, cache_obj_t **tail,
-                         cache_obj_t *cache_obj);
+void prepend_obj_to_head(cache_obj_t **head, cache_obj_t **tail, cache_obj_t *cache_obj);
 
-cache_obj_t* T_evict_last_obj(cache_obj_t **head, cache_obj_t **tail);
+cache_obj_t *T_evict_last_obj(cache_obj_t **head, cache_obj_t **tail);
 
-void T_prepend_obj_to_head(cache_obj_t **head, cache_obj_t **tail,
-                                  cache_obj_t *cache_obj);
+void T_prepend_obj_to_head(cache_obj_t **head, cache_obj_t **tail, cache_obj_t *cache_obj);
 
 /**
  * append the object to the tail of the doubly linked list
@@ -292,8 +289,7 @@ void T_prepend_obj_to_head(cache_obj_t **head, cache_obj_t **tail,
  * @param tail
  * @param cache_obj
  */
-void append_obj_to_tail(cache_obj_t **head, cache_obj_t **tail,
-                        cache_obj_t *cache_obj);
+void append_obj_to_tail(cache_obj_t **head, cache_obj_t **tail, cache_obj_t *cache_obj);
 
 bool is_doublyll_intact(cache_obj_t *head, cache_obj_t *tail);
 
@@ -310,7 +306,7 @@ bool contains_object(cache_obj_t *head, cache_obj_t *obj);
  */
 static inline void free_cache_obj(cache_obj_t *cache_obj) {
   // destroy the lock
-  //TODO: get it back
+  // TODO: get it back
   my_free(sizeof(cache_obj_t), cache_obj);
 }
 
