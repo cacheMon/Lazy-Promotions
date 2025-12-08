@@ -1,4 +1,4 @@
-# Demystifying and Improving Lazy Promotion in Cache Eviction [Experiment, Analysis & Benchmark]
+# Demystifying and Improving Lazy Promotion in Cache Eviction [VLDB'26]
 
 This repository contains the source code and experimental data for the paper "Demystifying and Improving Lazy Promotion in Cache Eviction".
 
