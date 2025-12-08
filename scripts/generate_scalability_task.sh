@@ -31,7 +31,7 @@ for iteration in $(seq 1 $num_iteration); do
     cache_sizes=("94000")
     for size in "${cache_sizes[@]}"; do
         for threads in "${threads_list[@]}"; do
-            run_simulation $algo "" "" $size $threads >> $output_dir/$algo/result_${iteration}.txt
+            run_simulation $algo "" $size $threads >> $output_dir/$algo/result_${iteration}.txt
         done
     done
 
@@ -40,7 +40,7 @@ for iteration in $(seq 1 $num_iteration); do
     cache_sizes=("91000")
     for size in "${cache_sizes[@]}"; do
         for threads in "${threads_list[@]}"; do
-            run_simulation $algo "" "" $size $threads >> $output_dir/$algo/result_${iteration}.txt
+            run_simulation $algo "" $size $threads >> $output_dir/$algo/result_${iteration}.txt
         done
     done
 
