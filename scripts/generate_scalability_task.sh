@@ -29,7 +29,7 @@ for iteration in $(seq 1 $num_iteration); do
 
     algo="fifo"
     mkdir -p $output_dir/$algo
-    cache_sizes=("94000" "74000" "50000" "24000")
+    cache_sizes=("94000")
     for size in "${cache_sizes[@]}"; do
         for threads in "${threads_list[@]}"; do
             run_simulation $algo "" "" $size $threads >> $output_dir/$algo/result_${iteration}.txt
@@ -38,7 +38,7 @@ for iteration in $(seq 1 $num_iteration); do
 
     algo="lru"
     mkdir -p $output_dir/$algo
-    cache_sizes=("91000" "65000" "42000" "18000")
+    cache_sizes=("91000")
     for size in "${cache_sizes[@]}"; do
         for threads in "${threads_list[@]}"; do
             run_simulation $algo "" "" $size $threads >> $output_dir/$algo/result_${iteration}.txt
@@ -47,7 +47,7 @@ for iteration in $(seq 1 $num_iteration); do
 
     algo="lru-prob"
     mkdir -p $output_dir/$algo
-    cache_sizes=("88000" "68000" "48000" "20000")
+    cache_sizes=("88000")
     for p in 0.9 0.8 0.6 0.5 0.4 0.2 0.1 0.05 0.01; do
         for size in "${cache_sizes[@]}"; do
             for threads in "${threads_list[@]}"; do
@@ -58,7 +58,7 @@ for iteration in $(seq 1 $num_iteration); do
 
     algo="lru-delay"
     mkdir -p $output_dir/$algo
-    cache_sizes=("90000" "68000" "46000" "19000")
+    cache_sizes=("90000")
     for p in 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ; do
         for size in "${cache_sizes[@]}"; do
             for threads in "${threads_list[@]}"; do
@@ -69,7 +69,7 @@ for iteration in $(seq 1 $num_iteration); do
 
     algo="clock"
     mkdir -p $output_dir/$algo
-    cache_sizes=("90000" "63000" "42000" "17000")
+    cache_sizes=("90000")
     for p in 1 2 3 4 5 10 15 20 ; do
         for size in "${cache_sizes[@]}"; do
             for threads in "${threads_list[@]}"; do
@@ -80,7 +80,7 @@ for iteration in $(seq 1 $num_iteration); do
 
     algo="batch"
     mkdir -p $output_dir/$algo
-    cache_sizes=("90000" "63000" "41000" "17000")
+    cache_sizes=("90000")
     for p in 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ; do
         for size in "${cache_sizes[@]}"; do
             for threads in "${threads_list[@]}"; do
@@ -91,7 +91,7 @@ for iteration in $(seq 1 $num_iteration); do
 
     algo="randomK"
     mkdir -p $output_dir/$algo
-    cache_sizes=("92000" "69000" "47000" "20000")
+    cache_sizes=("92000")
     for p in 1 2 4 8 16 32 64 128; do
         for size in "${cache_sizes[@]}"; do
             for threads in "${threads_list[@]}"; do
